@@ -778,7 +778,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               </div>
             `;
             el.style.pointerEvents = 'none'; // Allow scroll through empty space
-            el.onpointerdown = (e) => {
+            el.onclick = (e) => {
                e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
@@ -870,7 +870,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             
             // Explicitly bind DOM event to bypass inline string sanitization or scoping issues
             el.style.pointerEvents = 'none'; // Allow scroll through empty space, inner div has pointer-events: all
-            el.onpointerdown = (e) => {
+            el.onclick = (e) => {
                e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapPixelClick', {
                   detail: { name: d.name, country: d.country, lat: d.lat, lng: d.lng }

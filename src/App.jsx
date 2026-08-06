@@ -593,11 +593,12 @@ function App() {
         <GlobeComponent 
         selectedCountry={selectedCountry}
         onCountryClick={(country) => {
-          if(!hasStarted) return;
-          setSelectedCountry(country);
-          setSelectedPixel(null);
-          
-          // Track visited countries for mission
+            if(!hasStarted) return;
+            setSelectedCountry(country);
+            setSelectedPixel(null);
+            setSelectedLogoName(null);
+            
+            // Track visited countries for mission
           try {
             const visited = JSON.parse(localStorage.getItem('visitedCountries') || '[]');
             if (!visited.includes(country.ADMIN)) {
