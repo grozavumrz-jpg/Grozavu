@@ -223,76 +223,69 @@ export default function UIOverlay({
       <audio id="bgm-audio" loop src="/bgm.mp3" preload="auto" />
       <audio id="sfx-buy" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto" />
 
-      {/* Header */}
-      <header className="absolute top-0 left-0 w-full p-4 flex flex-col md:flex-row justify-between items-start md:items-center pointer-events-auto z-40 gap-4">
-        {/* Left Side: Stats */}
-        <div className="flex flex-col gap-2 w-full md:w-auto">
-          {/* Logo & Network */}
-          <div className="flex items-center justify-between md:justify-start gap-4">
-            <Zap className="text-neonCyan w-8 h-8" />
-            <h1 className="text-3xl font-bold glow-text tracking-wider">HEX<span className="text-neonCyan">GLOBE</span></h1>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => {
-                const newAudioState = !audioEnabled;
-                setAudioEnabled(newAudioState);
-                const bgm = document.getElementById('bgm-audio');
-                if (bgm) {
-                  if (newAudioState) bgm.play().catch(e => console.log('Audio play failed:', e));
-                  else bgm.pause();
-                }
-              }}
-              className={`glass-panel px-4 py-2 rounded-full flex items-center justify-center transition-all ${audioEnabled ? 'border-neonCyan text-neonCyan shadow-[0_0_10px_rgba(0,243,255,0.4)]' : 'border-gray-700 text-gray-500'}`}
-            >
-              <Radio className={`w-4 h-4 ${audioEnabled ? 'animate-pulse' : ''}`} />
-            </button>
-            
-            {/* Live Online Counter */}
-            <div className="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-xs font-bold text-white border-green-500/30">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-              <span className="text-green-400">{(Math.floor(Date.now() / 100000) % 200) + 120}</span>
-              <span className="text-gray-400 font-medium">Users Online</span>
-            </div>
-          </div>
+      {/* Top Bar: Logo + Live counter only */}
+      <header className="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center pointer-events-auto z-40">
+        <div className="flex items-center gap-3">
+          <Zap className="text-neonCyan w-6 h-6" />
+          <h1 className="text-xl font-bold glow-text tracking-wider">HEX<span className="text-neonCyan">GLOBE</span></h1>
         </div>
-        
-        {/* Right Side: Stats + Buttons */}
-        <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-4 w-full md:w-auto justify-center md:justify-end">
-          {/* Missions & Profile Buttons */}
+        <div className="flex items-center gap-3">
           <button 
-            onClick={onShowMissions}
-            className="px-4 py-2 bg-black/40 border border-neonCyan/30 text-neonCyan rounded-xl font-bold hover:bg-neonCyan/20 transition-all shadow-[0_0_10px_rgba(0,243,255,0.2)] flex items-center gap-2"
+            onClick={() => {
+              const newAudioState = !audioEnabled;
+              setAudioEnabled(newAudioState);
+              const bgm = document.getElementById('bgm-audio');
+              if (bgm) {
+                if (newAudioState) bgm.play().catch(e => console.log('Audio play failed:', e));
+                else bgm.pause();
+              }
+            }}
+            className={`glass-panel p-2 rounded-full flex items-center justify-center transition-all ${audioEnabled ? 'border-neonCyan text-neonCyan shadow-[0_0_10px_rgba(0,243,255,0.4)]' : 'border-gray-700 text-gray-500'}`}
           >
-            <Target className="w-4 h-4 text-neonCyan" />
-            Misiuni
+            <Radio className={`w-4 h-4 ${audioEnabled ? 'animate-pulse' : ''}`} />
           </button>
-          <button 
-            onClick={onShowCosmetics}
-            className="px-4 py-2 bg-black/40 border border-purple-500/30 text-purple-400 rounded-xl font-bold hover:bg-purple-500/20 transition-all shadow-[0_0_10px_rgba(168,85,247,0.2)] flex items-center gap-2"
-          >
-            <Award className="w-4 h-4 text-purple-400" />
-            Magazin
-          </button>
-          <button
-            onClick={() => onUpdateBalance(1000)}
-            className="px-4 py-2 bg-black/40 border border-green-500/30 text-green-400 rounded-xl font-bold hover:bg-green-500/20 transition-all text-xs"
-          >
-            +Cheat 1000 Px
-          </button>
-          <button
-            onClick={onShowMedals}
-            className="glass-panel px-4 py-3 rounded-full flex items-center gap-2 text-sm font-bold hover:border-[#bc13fe]/50 transition-all"
-          >
-            <User className="w-4 h-4 text-[#bc13fe]" />
-            <span className="text-gray-300">Profilul Meu</span>
-          </button>
+          <div className="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_#22c55e]"></div>
+            <span className="text-green-400">{(Math.floor(Date.now() / 100000) % 200) + 120}</span>
+            <span className="text-gray-400 hidden sm:inline">Online</span>
+          </div>
         </div>
       </header>
 
+      {/* Floating Icon Dock - Left Side */}
+      <div className="fixed left-3 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2 pointer-events-auto">
+        <button
+          onClick={onShowMissions}
+          title="Misiuni"
+          className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-neonCyan/30 text-neonCyan hover:bg-neonCyan/20 hover:shadow-[0_0_12px_rgba(0,243,255,0.5)] transition-all active:scale-95"
+        >
+          <Target className="w-5 h-5" />
+        </button>
+        <button
+          onClick={onShowCosmetics}
+          title="Magazin"
+          className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] transition-all active:scale-95"
+        >
+          <Award className="w-5 h-5" />
+        </button>
+        <button
+          onClick={onShowMedals}
+          title="Profilul Meu"
+          className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-neonPurple/30 text-neonPurple hover:bg-neonPurple/20 hover:shadow-[0_0_12px_rgba(188,19,254,0.5)] transition-all active:scale-95"
+        >
+          <User className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => onUpdateBalance(1000)}
+          title="+1000 Px (Test)"
+          className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-green-500/30 text-green-400 hover:bg-green-500/20 hover:shadow-[0_0_12px_rgba(34,197,94,0.5)] transition-all active:scale-95"
+        >
+          <Zap className="w-5 h-5" />
+        </button>
+      </div>
+
       {/* Main Content Area */}
-      <div className="relative flex-1 min-h-0 mt-28 w-full">
+      <div className="relative flex-1 min-h-0 mt-14 w-full">
         
         {/* Leaderboard Left */}
         <div className="hidden md:flex fixed bottom-6 left-6 glass-panel w-80 rounded-2xl p-6 pointer-events-auto max-h-[calc(100vh-120px)] overflow-hidden flex-col z-30">
@@ -381,7 +374,7 @@ export default function UIOverlay({
 
         {/* Selected Country/Pixel Panel Right */}
         {selectedCountry && conqueredCountries[selectedCountry.ADMIN] ? (
-          <div className="hidden md:flex fixed bottom-6 right-6 glass-panel w-96 max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all duration-300 animate-in slide-in-from-right-10 overflow-hidden z-30">
+          <div className="flex fixed bottom-[72px] md:bottom-6 right-0 md:right-6 glass-panel w-full md:w-96 max-h-[70vh] md:max-h-[calc(100vh-120px)] flex-col rounded-t-2xl md:rounded-2xl pointer-events-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-30">
             <div className="absolute inset-0 bg-red-900/20 z-0 pointer-events-none"></div>
             
             <div className="p-6 pb-4 border-b border-red-500/30 shrink-0 relative z-10 bg-black/60">
@@ -421,7 +414,7 @@ export default function UIOverlay({
             </div>
           </div>
         ) : selectedCountry ? (
-          <div className="hidden md:flex fixed bottom-6 right-6 glass-panel w-96 max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-neonCyan border transition-all duration-300 animate-in slide-in-from-right-10 overflow-hidden z-30">
+          <div className="flex fixed bottom-[72px] md:bottom-6 right-0 md:right-6 glass-panel w-full md:w-96 max-h-[75vh] md:max-h-[calc(100vh-120px)] flex-col rounded-t-2xl md:rounded-2xl pointer-events-auto border-neonCyan border transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-30">
             <div className="p-6 pb-4 border-b border-white/10 shrink-0">
               <div className="flex justify-between items-start mb-4">
                 <div>
