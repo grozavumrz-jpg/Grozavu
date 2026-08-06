@@ -596,7 +596,7 @@ export default function UIOverlay({
                      <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-3 flex justify-between items-center">
                         <span>Alianțe Active</span>
                         <span className="text-purple-400 text-xs bg-purple-500/20 px-2 py-0.5 rounded-full">
-                           {alliances.filter(a => a.countryA === selectedCountry.ADMIN || a.countryB === selectedCountry.ADMIN).length} / 6
+                           {alliances.filter(a => a.countryA === selectedCountry.ADMIN || a.countryB === selectedCountry.ADMIN).length} / 2
                         </span>
                      </h4>
                      

@@ -37,19 +37,10 @@ function App() {
   const [alliances, setAlliances] = useState(() => {
     const defaultAlliances = [
       { countryA: 'Romania', countryB: 'Moldova', expiresAt: Date.now() + 100000000, name: 'Lupii Daci', crest: '🐺', color: '#bc13fe', creator: 'VladTepes', website: 'www.lupiidaci.ro', logoUrl: 'https://images.unsplash.com/photo-1596726916538-4e1223e71dcb?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'Romania', countryB: 'Bulgaria', expiresAt: Date.now() + 100000000, name: 'Ursul Brun', crest: '🐻', color: '#8b4513', creator: 'StefanCelMare', website: 'www.ursulbrun.com', logoUrl: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'Romania', countryB: 'Serbia', expiresAt: Date.now() + 100000000, name: 'Vulturii', crest: '🦅', color: '#ff4444', creator: 'MihaiViteazu', website: 'www.vulturii-ro.net', logoUrl: 'https://images.unsplash.com/photo-1549471013-3364d7220b75?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'Romania', countryB: 'Hungary', expiresAt: Date.now() + 100000000, name: 'Dragonii', crest: '🐉', color: '#00ff44', creator: 'DragonSlayer', website: 'www.dragonii-legende.ro', logoUrl: 'https://images.unsplash.com/photo-1534067447472-7a76c8cba0b0?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'United States of America', countryB: 'Canada', expiresAt: Date.now() + 100000000, name: 'Vulturul de Fier', crest: '🦅', color: '#ff4444', creator: 'CryptoKing', website: 'www.iron-eagle.us', logoUrl: 'https://images.unsplash.com/photo-1555621415-081cf50d2493?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'United States of America', countryB: 'United Kingdom', expiresAt: Date.now() + 100000000, name: 'NATO Elite', crest: '🛡️', color: '#0055ff', creator: 'CommanderZero', website: 'www.nato-elite.org', logoUrl: 'https://images.unsplash.com/photo-1579222471617-640b61f22144?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'United States of America', countryB: 'Mexico', expiresAt: Date.now() + 100000000, name: 'NAFTA Cartel', crest: '💰', color: '#00ff44', creator: 'ElJefe', website: 'www.nafta-cartel.mx', logoUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'United States of America', countryB: 'Japan', expiresAt: Date.now() + 100000000, name: 'Pacific Rim', crest: '🌊', color: '#00ffff', creator: 'MechaPilot', website: 'www.pacific-rim.jp', logoUrl: 'https://images.unsplash.com/photo-1533227260812-70b9ab301620?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'China', countryB: 'Russia', expiresAt: Date.now() + 100000000, name: 'Dragonul Roșu', crest: '🐉', color: '#ff0000', creator: 'NeonNinja', website: 'www.red-dragon.cn', logoUrl: 'https://images.unsplash.com/photo-1533227260812-70b9ab301620?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'Germany', countryB: 'France', expiresAt: Date.now() + 100000000, name: 'Uniunea Europeană', crest: '🇪🇺', color: '#0033ff', creator: 'IceBreaker', website: 'www.eu-alliance.eu', logoUrl: 'https://images.unsplash.com/photo-1464692805480-a69dfaafdb0d?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
-      { countryA: 'Japan', countryB: 'South Korea', expiresAt: Date.now() + 100000000, name: 'Cyber Samurai', crest: '⚔️', color: '#ff00ff', creator: 'ShadowKing', website: 'www.cyber-samurai.jp', logoUrl: 'https://images.unsplash.com/photo-1579222471617-640b61f22144?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 }
+      { countryA: 'United States of America', countryB: 'Canada', expiresAt: Date.now() + 100000000, name: 'Vulturul de Fier', crest: '🦅', color: '#ff4444', creator: 'CryptoKing', website: 'www.iron-eagle.us', logoUrl: 'https://images.unsplash.com/photo-1555621415-081cf50d2493?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 }
     ];
     const saved = localStorage.getItem('hexglobe_alliances');
-    return saved ? JSON.parse(saved) : defaultAlliances;
+    return saved ? JSON.parse(saved).slice(0, 2) : defaultAlliances;
   });
   
   // Track how many pixels were donated for each country's bank
@@ -546,8 +537,8 @@ function App() {
 
   const handleAddAlliance = (allianceData) => {
     const countryAlliances = alliances.filter(a => a.countryA === allianceData.countryA || a.countryB === allianceData.countryA);
-    if (countryAlliances.length >= 6) {
-      alert(`Națiunea ${allianceData.countryA} a atins numărul maxim de 6 Alianțe!`);
+    if (countryAlliances.length >= 2) {
+      alert(`Națiunea ${allianceData.countryA} a atins numărul maxim de 2 Alianțe!`);
       return;
     }
     setAlliances(prev => [
