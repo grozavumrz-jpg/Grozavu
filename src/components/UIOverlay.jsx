@@ -223,13 +223,14 @@ export default function UIOverlay({
       <audio id="bgm-audio" loop src="/bgm.mp3" preload="auto" />
       <audio id="sfx-buy" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto" />
 
-      {/* Top Bar: Logo + Live counter only */}
-      <header className="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center pointer-events-auto z-40">
-        <div className="flex items-center gap-3">
-          <Zap className="text-neonCyan w-6 h-6" />
-          <h1 className="text-xl font-bold glow-text tracking-wider">HEX<span className="text-neonCyan">GLOBE</span></h1>
-        </div>
-        <div className="flex items-center gap-3">
+      {/* Top Bar: minimal - only online counter */}
+      <header className="absolute top-0 left-0 w-full px-4 py-2 flex justify-between items-center pointer-events-auto z-40">
+        <div className="flex items-center gap-2">
+          <div className="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold">
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_#22c55e]"></div>
+            <span className="text-green-400">{(Math.floor(Date.now() / 100000) % 200) + 120}</span>
+            <span className="text-gray-400">Online</span>
+          </div>
           <button 
             onClick={() => {
               const newAudioState = !audioEnabled;
@@ -240,19 +241,14 @@ export default function UIOverlay({
                 else bgm.pause();
               }
             }}
-            className={`glass-panel p-2 rounded-full flex items-center justify-center transition-all ${audioEnabled ? 'border-neonCyan text-neonCyan shadow-[0_0_10px_rgba(0,243,255,0.4)]' : 'border-gray-700 text-gray-500'}`}
+            className={`glass-panel p-2 rounded-full flex items-center justify-center transition-all ${audioEnabled ? 'border-neonCyan text-neonCyan' : 'border-gray-700 text-gray-600'}`}
           >
-            <Radio className={`w-4 h-4 ${audioEnabled ? 'animate-pulse' : ''}`} />
+            <Radio className={`w-3.5 h-3.5 ${audioEnabled ? 'animate-pulse' : ''}`} />
           </button>
-          <div className="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_#22c55e]"></div>
-            <span className="text-green-400">{(Math.floor(Date.now() / 100000) % 200) + 120}</span>
-            <span className="text-gray-400 hidden sm:inline">Online</span>
-          </div>
         </div>
       </header>
 
-      {/* Floating Icon Dock - Left Side */}
+      {/* Floating Icon Dock - Left Side (3 icons only) */}
       <div className="fixed left-3 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2 pointer-events-auto">
         <button
           onClick={onShowMissions}
@@ -274,13 +270,6 @@ export default function UIOverlay({
           className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-neonPurple/30 text-neonPurple hover:bg-neonPurple/20 hover:shadow-[0_0_12px_rgba(188,19,254,0.5)] transition-all active:scale-95"
         >
           <User className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => onUpdateBalance(1000)}
-          title="+1000 Px (Test)"
-          className="w-11 h-11 glass-panel rounded-xl flex items-center justify-center border border-green-500/30 text-green-400 hover:bg-green-500/20 hover:shadow-[0_0_12px_rgba(34,197,94,0.5)] transition-all active:scale-95"
-        >
-          <Zap className="w-5 h-5" />
         </button>
       </div>
 
