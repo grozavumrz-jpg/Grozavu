@@ -140,37 +140,45 @@ export default function CosmeticsShop({ isOpen, onClose, balance, onUnlock, inve
       <div className="glass-panel w-full max-w-4xl rounded-3xl border border-neonCyan/40 shadow-[0_0_50px_rgba(0,243,255,0.15)] flex flex-col overflow-hidden" style={{maxHeight: 'min(90vh, 700px)'}}>
 
         
-        <div className="p-6 border-b border-white/10 bg-black/40 flex justify-between items-center relative overflow-hidden shrink-0">
+        <div className="p-4 md:p-6 border-b border-white/10 bg-black/40 flex flex-col md:flex-row justify-between items-start md:items-center relative shrink-0 gap-4">
           <div className="absolute inset-0 bg-gradient-to-r from-neonCyan/20 to-purple-500/20 opacity-50"></div>
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
-              <Sparkles className="w-6 h-6 text-neonCyan" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-black text-white tracking-widest uppercase">Piața Neagră</h2>
-              <div className="flex gap-4 mt-2">
-                <button 
-                  onClick={() => setActiveTab('cosmetics')}
-                  className={`text-sm font-bold uppercase tracking-widest pb-1 border-b-2 transition-colors ${activeTab === 'cosmetics' ? 'text-neonCyan border-neonCyan' : 'text-gray-500 border-transparent hover:text-gray-300'}`}
-                >
-                  💅 Cosmetice
-                </button>
-                <button 
-                  onClick={() => setActiveTab('boosts')}
-                  className={`text-sm font-bold uppercase tracking-widest pb-1 border-b-2 transition-colors ${activeTab === 'boosts' ? 'text-yellow-500 border-yellow-500' : 'text-gray-500 border-transparent hover:text-gray-300'}`}
-                >
-                  🚀 Boost-uri
-                </button>
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-3 w-full">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shrink-0">
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-neonCyan" />
               </div>
+              <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase truncate">Piața Neagră</h2>
+              
+              {/* Close button on mobile positioned top right */}
+              <button onClick={onClose} className="ml-auto p-2 hover:bg-white/10 rounded-full transition-colors text-white md:hidden shrink-0 bg-black/50 border border-white/10">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex gap-4 mt-2 md:mt-0 overflow-x-auto w-full pb-1">
+              <button 
+                onClick={() => setActiveTab('cosmetics')}
+                className={`text-xs md:text-sm font-bold uppercase tracking-widest pb-1 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'cosmetics' ? 'text-neonCyan border-neonCyan' : 'text-gray-500 border-transparent hover:text-gray-300'}`}
+              >
+                💅 Cosmetice
+              </button>
+              <button 
+                onClick={() => setActiveTab('boosts')}
+                className={`text-xs md:text-sm font-bold uppercase tracking-widest pb-1 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'boosts' ? 'text-yellow-500 border-yellow-500' : 'text-gray-500 border-transparent hover:text-gray-300'}`}
+              >
+                🚀 Boost-uri
+              </button>
             </div>
           </div>
           
-          <div className="relative z-10 flex items-center gap-6">
-            <div className="bg-black/50 px-4 py-2 rounded-xl border border-white/10">
-              <span className="text-xs text-gray-500 uppercase font-bold block">Balanța ta</span>
-              <span className="text-xl font-black text-neonCyan">{balance} 💎</span>
+          <div className="relative z-10 flex items-center gap-4 justify-between w-full md:w-auto mt-2 md:mt-0">
+            <div className="bg-black/50 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-white/10 flex-1 md:flex-none flex justify-between md:flex-col md:justify-center items-center md:items-start">
+              <span className="text-[10px] md:text-xs text-gray-500 uppercase font-bold block">Balanța ta</span>
+              <span className="text-lg md:text-xl font-black text-neonCyan">{balance} 💎</span>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white">
+            {/* Close button on desktop */}
+            <button onClick={onClose} className="hidden md:block p-2 hover:bg-white/10 rounded-full transition-colors text-white shrink-0">
               <X className="w-6 h-6" />
             </button>
           </div>
