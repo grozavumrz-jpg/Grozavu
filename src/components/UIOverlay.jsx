@@ -444,12 +444,14 @@ export default function UIOverlay({
                 <div className="flex gap-2 mt-4 bg-black/40 p-1 rounded-lg border border-white/5">
                   <button 
                     onClick={() => setRightPanelTab('patriots')}
+                    onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('patriots'); }}
                     className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'patriots' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     👤 Patrioți
                   </button>
                   <button 
                     onClick={() => setRightPanelTab('wars')}
+                    onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('wars'); }}
                     className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'wars' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     ⚔️ Război
@@ -457,6 +459,7 @@ export default function UIOverlay({
 
                   <button 
                     onClick={() => setRightPanelTab('alliances')}
+                    onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('alliances'); }}
                     className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'alliances' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     🛡️ Alianțe

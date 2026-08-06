@@ -694,21 +694,9 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         customThreeObjectUpdate={(obj, d) => {
           if (!obj.__innerGroup) return;
           if (d.isUFO) {
-            // Spin UFO
-            obj.__innerGroup.rotation.y += 0.05;
-            // Float just above the country surface
-            const t = Date.now() / 500;
-            obj.__innerGroup.position.z = Math.sin(t) * 0.1 + 0.2; 
-          } else if (obj.__isSprite) {
-             // Sprites shouldn't rotate on X/Y/Z, just float!
-            const t = Date.now() / 300;
-            obj.__innerGroup.position.z = Math.sin(t + d.lat) * 0.2 + 0.2; 
-          } else {
-            // Spin crystal on multiple axes
-            obj.__innerGroup.rotation.y += 0.04;
-            obj.__innerGroup.rotation.z += 0.02;
-            const t = Date.now() / 300;
-            obj.__innerGroup.position.z = Math.sin(t + d.lat) * 0.3 + 0.5; 
+            obj.__innerGroup.rotation.y += 0.02;
+          } else if (!obj.__isSprite) {
+            obj.__innerGroup.rotation.y += 0.01;
           }
         }}
         onCustomLayerHover={(obj) => {
