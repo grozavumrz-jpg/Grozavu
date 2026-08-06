@@ -40,13 +40,20 @@ export default function BottomChatBar({
   activeBoosts = [],
   userName = 'Eu',
   userPixelsCount = 0,
-  onOpenPrivateChat
+  onOpenPrivateChat,
+  purchasedPixels = [],
 }) {
   const [channel, setChannel] = useState('global');
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const messagesEndRef = useRef(null);
+
+  // Compute online counts - simulate per-country based on pixel counts
+  const totalOnline = (Math.floor(Date.now() / 100000) % 200) + 120;
+  const countryPixelCount = purchasedPixels.filter(p => p.country === countryName).length;
+  // National online = proportional to pixels + small random base
+  const nationalOnline = Math.max(1, Math.floor((countryPixelCount / Math.max(purchasedPixels.length, 1)) * totalOnline) + Math.floor(Date.now() / 200000) % 8 + 3);
 
   const getStorageKey = () => `hexglobe_chat_${channel === 'local' ? countryName : 'international'}`;
 
@@ -131,12 +138,13 @@ export default function BottomChatBar({
           <button
             onClick={() => setChannel('global')}
             className="flex items-center gap-1.5 px-4 h-full text-xs font-bold uppercase tracking-wider transition-all relative"
-            style={{
-              color: channel === 'global' ? '#bc13fe' : '#555',
-            }}
+            style={{ color: channel === 'global' ? '#bc13fe' : '#555' }}
           >
             <Globe2 className="w-3.5 h-3.5" />
             Global
+            <span className="ml-1 text-[10px] font-mono bg-white/5 px-1.5 py-0.5 rounded-full" style={{ color: channel === 'global' ? '#bc13fe' : '#444' }}>
+              {totalOnline}
+            </span>
             {channel === 'global' && (
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-600 to-pink-500 rounded-full" />
             )}
@@ -144,12 +152,13 @@ export default function BottomChatBar({
           <button
             onClick={() => setChannel('local')}
             className="flex items-center gap-1.5 px-4 h-full text-xs font-bold uppercase tracking-wider transition-all relative"
-            style={{
-              color: channel === 'local' ? '#00f3ff' : '#555',
-            }}
+            style={{ color: channel === 'local' ? '#00f3ff' : '#555' }}
           >
             <MapPin className="w-3.5 h-3.5" />
             {countryName !== 'Lume' ? countryName : 'Național'}
+            <span className="ml-1 text-[10px] font-mono bg-white/5 px-1.5 py-0.5 rounded-full" style={{ color: channel === 'local' ? '#00f3ff' : '#444' }}>
+              {nationalOnline}
+            </span>
             {channel === 'local' && (
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" />
             )}

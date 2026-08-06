@@ -638,6 +638,7 @@ function App() {
           userName={name || 'Eu'}
           userPixelsCount={userBalance}
           onOpenPrivateChat={handleOpenPrivateChat}
+          purchasedPixels={purchasedPixels}
         />
       )}
 

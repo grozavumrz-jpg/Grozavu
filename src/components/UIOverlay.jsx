@@ -223,32 +223,10 @@ export default function UIOverlay({
       <audio id="bgm-audio" loop src="/bgm.mp3" preload="auto" />
       <audio id="sfx-buy" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto" />
 
-      {/* Top Bar: minimal - only online counter */}
-      <header className="absolute top-0 left-0 w-full px-4 py-2 flex justify-between items-center pointer-events-auto z-40">
-        <div className="flex items-center gap-2">
-          <div className="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_#22c55e]"></div>
-            <span className="text-green-400">{(Math.floor(Date.now() / 100000) % 200) + 120}</span>
-            <span className="text-gray-400">Online</span>
-          </div>
-          <button 
-            onClick={() => {
-              const newAudioState = !audioEnabled;
-              setAudioEnabled(newAudioState);
-              const bgm = document.getElementById('bgm-audio');
-              if (bgm) {
-                if (newAudioState) bgm.play().catch(e => console.log('Audio play failed:', e));
-                else bgm.pause();
-              }
-            }}
-            className={`glass-panel p-2 rounded-full flex items-center justify-center transition-all ${audioEnabled ? 'border-neonCyan text-neonCyan' : 'border-gray-700 text-gray-600'}`}
-          >
-            <Radio className={`w-3.5 h-3.5 ${audioEnabled ? 'animate-pulse' : ''}`} />
-          </button>
-        </div>
-      </header>
+      {/* Audio toggle moved to dock - no header bar */}
 
-      {/* Floating Icon Dock - Left Side (3 icons only) */}
+
+      {/* Floating Icon Dock - Left Side (3 icons + audio) */}
       <div className="fixed left-3 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2 pointer-events-auto">
         <button
           onClick={onShowMissions}
@@ -271,10 +249,27 @@ export default function UIOverlay({
         >
           <User className="w-5 h-5" />
         </button>
+        <button
+          onClick={() => {
+            const newAudioState = !audioEnabled;
+            setAudioEnabled(newAudioState);
+            const bgm = document.getElementById('bgm-audio');
+            if (bgm) {
+              if (newAudioState) bgm.play().catch(e => console.log('Audio play failed:', e));
+              else bgm.pause();
+            }
+          }}
+          title={audioEnabled ? 'Oprește Muzica' : 'Pornește Muzica'}
+          className={`w-11 h-11 glass-panel rounded-xl flex items-center justify-center transition-all active:scale-95 ${
+            audioEnabled ? 'border-neonCyan/50 text-neonCyan shadow-[0_0_8px_rgba(0,243,255,0.3)]' : 'border-gray-700/30 text-gray-600'
+          }`}
+        >
+          <Radio className={`w-5 h-5 ${audioEnabled ? 'animate-pulse' : ''}`} />
+        </button>
       </div>
 
       {/* Main Content Area */}
-      <div className="relative flex-1 min-h-0 mt-14 w-full">
+      <div className="relative flex-1 min-h-0 mt-0 w-full">
         
         {/* Leaderboard Left */}
         <div className="hidden md:flex fixed bottom-6 left-6 glass-panel w-80 rounded-2xl p-6 pointer-events-auto max-h-[calc(100vh-120px)] overflow-hidden flex-col z-30">
