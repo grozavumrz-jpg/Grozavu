@@ -12,6 +12,7 @@ body {
   margin: 0;
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   overflow: hidden;
+  overscroll-behavior: none; /* Prevent pull-to-refresh and bounce */
   /* Mobile performance */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

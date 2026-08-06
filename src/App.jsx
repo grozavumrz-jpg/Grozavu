@@ -580,7 +580,7 @@ function App() {
       style={{ backgroundImage: 'url(//unpkg.com/three-globe/example/img/night-sky.png)' }}
     >
       <div className="cyber-grid"></div>
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 touch-none">
         <GlobeComponent 
         selectedCountry={selectedCountry}
         onCountryClick={(country) => {
