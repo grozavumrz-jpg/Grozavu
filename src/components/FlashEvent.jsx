@@ -84,7 +84,26 @@ const FlashEvent = () => {
   };
 
   return (
-    <div className={`fixed top-24 right-6 z-40 glass-panel rounded-xl p-4 border ${currentEvent.border} bg-black/85 backdrop-blur-md shadow-lg`}>
+    <div className={`fixed z-40 glass-panel rounded-xl p-4 border ${currentEvent.border} bg-black/90 backdrop-blur-md shadow-lg`}
+      style={{
+        // On mobile: centered at bottom above chat bar; on wider screens: top-right
+        bottom: 'clamp(80px, 12vh, 100px)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        maxWidth: 260,
+        width: 'calc(100% - 32px)',
+        // On desktop override to top-right
+        ...(window.innerWidth >= 768 ? {
+          bottom: 'auto',
+          top: '6rem',
+          left: 'auto',
+          right: '1.5rem',
+          transform: 'none',
+          maxWidth: 240,
+          width: 'auto',
+        } : {})
+      }}
+    >
       <style>{`
         @keyframes pulseBorder {
           0%, 100% { opacity: 1; }
