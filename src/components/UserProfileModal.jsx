@@ -45,17 +45,17 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
   }
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
-      <div className="bg-[#0a0a0f] w-full max-w-[420px] rounded-2xl flex flex-col border border-white/5 shadow-2xl overflow-hidden relative">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto p-4">
+      <div className="bg-[#0a0a0f] w-full max-w-[420px] max-h-full rounded-2xl flex flex-col border border-white/5 shadow-2xl overflow-hidden relative">
         
         {/* Top Accent Line */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-red-500 to-orange-500"></div>
+        <div className="h-1.5 w-full shrink-0 bg-gradient-to-r from-red-500 to-orange-500"></div>
 
-        <div className="p-6 relative">
+        <div className="p-5 md:p-6 relative overflow-y-auto custom-scrollbar">
            {/* Close Button */}
            <button 
               onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors z-10"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-20"
            >
               <X className="w-4 h-4" />
            </button>
@@ -81,27 +81,27 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
                   <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
               </div>
               
-              <div className="flex flex-col">
-                 <h2 className="text-2xl font-black text-white tracking-wide">{username}</h2>
+              <div className="flex flex-col min-w-0 pr-8">
+                 <h2 className="text-xl md:text-2xl font-black text-white tracking-wide truncate">{username}</h2>
                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-300 mt-1 uppercase tracking-widest">
-                    <span className="text-lg">🪖</span> 
-                    {userPixels.length > 500 ? 'Guvernator' : userPixels.length > 100 ? 'General' : 'Soldat'}
+                    <span className="text-lg shrink-0">🪖</span> 
+                    <span className="truncate">{userPixels.length > 500 ? 'Guvernator' : userPixels.length > 100 ? 'General' : 'Soldat'}</span>
                  </div>
-                 <div className="text-xs text-gray-400 mt-1">
-                    {userPixels.length} pixeli deținuți în {mainCountry}
+                 <div className="text-xs text-gray-400 mt-1 truncate">
+                    {userPixels.length} pixeli în {mainCountry}
                  </div>
               </div>
            </div>
 
            {/* Social Buttons */}
-           <div className="flex gap-3 mb-6">
-              <a href={`https://instagram.com/${username}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#1a0f1a] hover:bg-[#2a1a2a] border border-[#bc13fe]/30 rounded-xl py-2.5 flex items-center justify-center gap-2 transition-colors">
-                 <span className="text-gray-400">📸</span>
-                 <span className="text-[#bc13fe] font-bold text-sm">@{username.replace(/\s+/g, '.').toLowerCase()}</span>
+           <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <a href={`https://instagram.com/${username}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#1a0f1a] hover:bg-[#2a1a2a] border border-[#bc13fe]/30 rounded-xl py-2.5 px-2 flex items-center justify-center gap-2 transition-colors min-w-0">
+                 <span className="text-gray-400 shrink-0">📸</span>
+                 <span className="text-[#bc13fe] font-bold text-sm truncate">@{username.replace(/\s+/g, '.').toLowerCase()}</span>
               </a>
-              <a href={`https://${username.replace(/\s+/g, '').toLowerCase()}.md`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#0a1f24] hover:bg-[#133038] border border-neonCyan/30 rounded-xl py-2.5 flex items-center justify-center gap-2 transition-colors">
-                 <Link className="w-4 h-4 text-neonCyan" />
-                 <span className="text-neonCyan font-bold text-sm">{username.replace(/\s+/g, '').toLowerCase()}.md</span>
+              <a href={`https://${username.replace(/\s+/g, '').toLowerCase()}.md`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#0a1f24] hover:bg-[#133038] border border-neonCyan/30 rounded-xl py-2.5 px-2 flex items-center justify-center gap-2 transition-colors min-w-0">
+                 <Link className="w-4 h-4 text-neonCyan shrink-0" />
+                 <span className="text-neonCyan font-bold text-sm truncate">{username.replace(/\s+/g, '').toLowerCase()}.md</span>
               </a>
            </div>
 
