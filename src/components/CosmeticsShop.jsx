@@ -135,8 +135,10 @@ export default function CosmeticsShop({ isOpen, onClose, balance, onUnlock, inve
   );
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
-      <div className="glass-panel w-full max-w-4xl max-h-[90vh] rounded-3xl border border-neonCyan/40 shadow-[0_0_50px_rgba(0,243,255,0.15)] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
+      <div className="min-h-full flex items-center justify-center p-3 py-6">
+      <div className="glass-panel w-full max-w-4xl rounded-3xl border border-neonCyan/40 shadow-[0_0_50px_rgba(0,243,255,0.15)] flex flex-col overflow-hidden" style={{maxHeight: 'min(90vh, 700px)'}}>
+
         
         <div className="p-6 border-b border-white/10 bg-black/40 flex justify-between items-center relative overflow-hidden shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-neonCyan/20 to-purple-500/20 opacity-50"></div>
@@ -174,9 +176,10 @@ export default function CosmeticsShop({ isOpen, onClose, balance, onUnlock, inve
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-black/20 custom-scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 bg-black/20 custom-scrollbar">
           {activeTab === 'cosmetics' ? renderCosmetics() : renderBoosts()}
         </div>
+      </div>
       </div>
     </div>
   );

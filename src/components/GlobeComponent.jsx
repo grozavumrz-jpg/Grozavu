@@ -362,7 +362,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
        ufoGroup.add(dome);
        ufoGroup.add(beam);
 
-       ufoGroup.scale.set(6.0, 6.0, 6.0);
+       ufoGroup.scale.set(1.5, 1.5, 1.5);
        
        const parent = new THREE.Group();
        parent.add(ufoGroup);
@@ -592,6 +592,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
         animateIn={false}
         backgroundColor="rgba(0,0,0,0)"
+        rendererConfig={{ antialias: false, powerPreference: "high-performance" }}
         
         // Polygons (Countries)
         polygonsData={countries.features}

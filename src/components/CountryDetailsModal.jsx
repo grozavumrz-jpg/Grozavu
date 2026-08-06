@@ -51,8 +51,9 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
   const flagUrl = isoA2 ? `https://flagcdn.com/w80/${isoA2}.png` : '';
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
-      <div className="glass-panel w-full max-w-2xl max-h-[85vh] rounded-2xl flex flex-col border border-neonCyan/40 shadow-[0_0_50px_rgba(0,243,255,0.15)] overflow-hidden relative">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
+      <div className="min-h-full flex items-center justify-center p-3 py-6">
+      <div className="glass-panel w-full max-w-2xl rounded-2xl flex flex-col border border-neonCyan/40 shadow-[0_0_50px_rgba(0,243,255,0.15)] overflow-hidden relative" style={{maxHeight:'min(85vh,700px)'}}>
         
         {/* Header */}
         <div className="p-6 border-b border-white/10 bg-black/40 flex justify-between items-start">
@@ -259,6 +260,7 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
             />
           </div>
         )}
+      </div>
       </div>
     </div>
   );

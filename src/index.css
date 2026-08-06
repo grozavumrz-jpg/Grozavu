@@ -12,7 +12,27 @@ body {
   margin: 0;
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   overflow: hidden;
+  /* Mobile performance */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Mobile: disable heavy backdrop-filter and complex animations for perf */
+@media (max-width: 768px) {
+  .glass-panel {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  /* Disable cyber grid animation on mobile */
+  .cyber-grid {
+    display: none !important;
+  }
+  /* Reduce animation duration on mobile */
+  .animate-pulse {
+    animation-duration: 2.5s !important;
+  }
+}
+
 
 .glass-panel {
   background: rgba(20, 20, 35, 0.4);

@@ -86,7 +86,7 @@ const FlashEvent = () => {
   return (
     // Elegant slim pill banner - top center, never overlaps anything
     <div
-      className={`fixed top-14 left-1/2 z-40 pointer-events-auto animate-in slide-in-from-top-4 duration-300`}
+      className={`fixed top-4 left-1/2 z-40 pointer-events-auto animate-in slide-in-from-top-4 duration-300`}
       style={{ transform: 'translateX(-50%)' }}
     >
       <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${currentEvent.border} bg-black/80 backdrop-blur-md shadow-lg`}>

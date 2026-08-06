@@ -31,11 +31,22 @@ export default function AllianceDetailsModal({ alliance, purchasedPixels, onClos
   const pixelsB = purchasedPixels.filter(p => p.country === alliance.countryB).length;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="min-h-full flex items-center justify-center p-4 py-8">
       <div 
          className="glass-panel w-full max-w-md rounded-2xl flex flex-col border shadow-2xl overflow-hidden relative"
          style={{ borderColor: `${alliance.color}80`, boxShadow: `0 0 40px ${alliance.color}30` }}
       >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-black/60 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+        >
+          <X className="w-4 h-4" />
+        </button>
         
         {/* Header (Crest & Name) */}
         <div className="p-8 pb-6 border-b border-white/10 bg-black/60 relative overflow-hidden flex flex-col items-center">
@@ -213,6 +224,7 @@ export default function AllianceDetailsModal({ alliance, purchasedPixels, onClos
            </button>
         </div>
         
+      </div>
       </div>
     </div>
   );
