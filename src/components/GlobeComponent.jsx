@@ -773,16 +773,20 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                }));
             };
           } else if (d.type === 'ufo-hp') {
-            el.innerHTML = `
-              <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: all; background: rgba(0,0,0,0.9); border: 2px solid red; box-shadow: 0 0 30px rgba(255,0,0,0.8); padding: 8px 16px; border-radius: 8px; color: white; font-family: sans-serif; font-size: 14px; font-weight: bold; white-space: nowrap; transform: translate(-50%, -250%); display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
-                <div style="color: #ff4444; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 2px; animation: pulse 1s infinite; pointer-events: none;">⚠️ ALIEN MOTHERSHIP - ${d.country.toUpperCase()}</div>
-                <div style="width: 150px; height: 10px; background: #222; border-radius: 4px; overflow: hidden; border: 1px solid #555; pointer-events: none;">
-                   <div style="width: ${(d.hp / d.maxHp) * 100}%; height: 100%; background: red; box-shadow: 0 0 10px red; transition: width 0.3s ease;"></div>
+              el.innerHTML = `
+                <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: all; background: linear-gradient(135deg, rgba(20,0,0,0.95), rgba(50,0,0,0.85)); border: 1px solid rgba(255,0,68,0.5); border-top: 3px solid #ff0044; box-shadow: 0 10px 30px -5px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2); padding: 12px 20px; border-radius: 6px; color: white; font-family: 'Inter', sans-serif; white-space: nowrap; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; pointer-events: none;">
+                     <span style="display: inline-block; width: 8px; height: 8px; background: #ff0044; border-radius: 50%; box-shadow: 0 0 10px #ff0044; animation: pulse 1s infinite;"></span>
+                     <span style="color: #fff; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,0,0,0.8);">TARGET LOCK: ${d.country.toUpperCase()}</span>
+                  </div>
+                  <div style="position: relative; width: 180px; height: 12px; background: rgba(0,0,0,0.8); border-radius: 2px; overflow: hidden; border: 1px solid rgba(255,0,68,0.4); pointer-events: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
+                     <div style="position: absolute; left: 0; top: 0; width: ${(d.hp / d.maxHp) * 100}%; height: 100%; background: linear-gradient(90deg, #aa0000, #ff0044); box-shadow: 0 0 15px #ff0044; transition: width 0.3s ease;"></div>
+                  </div>
+                  <div style="font-size: 10px; margin-top: 6px; font-weight: 700; color: #ff8888; letter-spacing: 1px; pointer-events: none;">▶ CLICK TO ENGAGE (${d.hp.toLocaleString()} / ${d.maxHp.toLocaleString()} HP)</div>
+                  <div style="position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 7px solid #ff0044;"></div>
                 </div>
-                <div style="font-size: 11px; margin-top: 4px; color: #ffaaaa; pointer-events: none;">CLICK PENTRU ATAC (${d.hp.toLocaleString()} / ${d.maxHp.toLocaleString()} HP)</div>
-              </div>
-            `;
-          } else if (d.type === 'logo') {
+              `;
+            } else if (d.type === 'logo') {
             let logoUrl = null;
             let currentPx = 100;
             let targetPx = 100;
