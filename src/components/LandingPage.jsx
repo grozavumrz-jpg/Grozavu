@@ -3,9 +3,10 @@ import { Crosshair, Shield, Zap, Globe2 } from 'lucide-react';
 
 export default function LandingPage({ onStart }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md animate-in fade-in duration-1000">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md animate-in fade-in duration-1000">
       
-      <div className="max-w-4xl w-full mx-auto p-8 relative">
+      <div className="min-h-full flex items-center justify-center p-4 py-12">
+        <div className="max-w-4xl w-full mx-auto relative">
         {/* Glow Effects */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-neonCyan/20 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-neonPurple/20 rounded-full blur-[80px] pointer-events-none"></div>
