@@ -436,7 +436,9 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     const crystal = new THREE.Mesh(geometry, material);
     // Push the pixel outwards along the local Z axis so it sits ABOVE the country polygons
     // Country altitude is 0.01 (1 unit thick) to 0.04 (4 units thick). 
-    crystal.position.z = 4.0;
+    // We use Z=10.0 because the parent group gets scaled down by 0.5 for small players.
+    // 10.0 * 0.5 = 5.0 (which is above the max altitude of 4 units).
+    crystal.position.z = 10.0;
     
     const group = new THREE.Group();
     group.add(crystal);
