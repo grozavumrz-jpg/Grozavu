@@ -1054,6 +1054,7 @@ function App() {
           bankFunds={countryBankFunds}
           onClose={() => setSelectedUserProfile(null)}
           onInvestInUser={handleInvestInUser}
+          onOpenChat={handleOpenPrivateChat}
         />
       )}
     </div>

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, MapPin, Target, Shield, Link, Coins, Medal, Upload } from 'lucide-react';
+import { X, MapPin, Target, Shield, Link, Coins, Medal, Upload, MessageSquare, RefreshCw } from 'lucide-react';
 
-export default function UserProfileModal({ username, purchasedPixels, bankFunds, onClose, onInvestInUser }) {
+export default function UserProfileModal({ username, purchasedPixels, bankFunds, onClose, onInvestInUser, onOpenChat }) {
   const [investAmount, setInvestAmount] = useState(10);
+  const [showTrade, setShowTrade] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const fileInputRef = useRef(null);
   const currentUser = localStorage.getItem('hexglobe_username') || 'Anonim';
@@ -139,6 +140,68 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
                 💎 Investește
               </button>
            </div>
+
+           {/* Player Interactions */}
+           {username !== currentUser && (
+             <div className="flex gap-2 mb-6">
+               <button 
+                 onClick={() => {
+                   if (onOpenChat) {
+                     onOpenChat(username);
+                     onClose();
+                   } else {
+                     alert("Chat în privat funcționalitate în curând!");
+                   }
+                 }}
+                 className="flex-1 bg-[#1a1a2e] hover:bg-[#252542] border border-[#bc13fe]/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+               >
+                 <MessageSquare className="w-3.5 h-3.5 text-[#bc13fe]" />
+                 Mesaj
+               </button>
+               <button 
+                 onClick={() => alert(`Ai trimis o invitație de alianță către ${username}!`)}
+                 className="flex-1 bg-[#152010] hover:bg-[#1f2f18] border border-green-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+               >
+                 <Shield className="w-3.5 h-3.5 text-green-500" />
+                 Alianță
+               </button>
+               <button 
+                 onClick={() => setShowTrade(!showTrade)}
+                 className="flex-1 bg-[#251500] hover:bg-[#352000] border border-orange-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+               >
+                 <RefreshCw className="w-3.5 h-3.5 text-orange-500" />
+                 Trade
+               </button>
+             </div>
+           )}
+
+           {showTrade && username !== currentUser && (
+             <div className="bg-[#15151a] border border-orange-500/30 rounded-xl p-4 mb-6 animate-in slide-in-from-top-2">
+                <h4 className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                   <RefreshCw className="w-3.5 h-3.5" /> Schimb pe Schimb (Live)
+                </h4>
+                <div className="flex items-center gap-2">
+                   <div className="flex-1 bg-black rounded-lg p-2 border border-white/10 text-center">
+                     <div className="text-[10px] text-gray-500 uppercase">Oferi</div>
+                     <input type="text" placeholder="ex: 10 Pixeli" className="w-full bg-transparent text-white text-center text-xs outline-none mt-1" />
+                   </div>
+                   <RefreshCw className="w-4 h-4 text-gray-500 shrink-0" />
+                   <div className="flex-1 bg-black rounded-lg p-2 border border-white/10 text-center">
+                     <div className="text-[10px] text-gray-500 uppercase">Primești</div>
+                     <input type="text" placeholder="ex: Insignă" className="w-full bg-transparent text-white text-center text-xs outline-none mt-1" />
+                   </div>
+                </div>
+                <button 
+                  onClick={() => {
+                     alert(`Ofertă de trade trimisă către ${username}! Se așteaptă confirmarea.`);
+                     setShowTrade(false);
+                  }}
+                  className="w-full mt-3 bg-orange-600 hover:bg-orange-500 text-white rounded-lg py-2 text-xs font-bold uppercase transition-colors"
+                >
+                  Trimite Oferta
+                </button>
+             </div>
+           )}
 
            {/* Badges */}
            <div>

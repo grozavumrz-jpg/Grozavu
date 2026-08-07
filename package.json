@@ -15,7 +15,6 @@
     "autoprefixer": "^10.5.4",
     "lucide-react": "^1.28.0",
     "postcss": "^8.5.25",
-    "puppeteer": "^25.5.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-globe.gl": "^2.38.0",

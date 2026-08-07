@@ -11,6 +11,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
   const [hoverD, setHoverD] = useState();
   const [hoveredPixel, setHoveredPixel] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const shipRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -100,48 +101,32 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     const iso = feature ? feature.properties.ISO_A2?.toLowerCase() : null;
     return (iso && iso !== '-99') ? iso : null;
   };
-
-
-  // Calculate html tooltips and live counters
-  const htmlElements = useMemo(() => {
-    const elements = [];
-    const countryStats = {};
-
-
-    // Calculate the centroid of a country from its GeoJSON geometry
-    const getCentroid = (name) => {
-      const feature = countries.features?.find(f => f.properties.ADMIN === name);
-      if (!feature) return null;
-      const geom = feature.geometry;
-      let pts = [];
-      if (geom.type === 'Polygon') {
-        pts = geom.coordinates[0];
-      } else if (geom.type === 'MultiPolygon') {
-        // Use the largest polygon (most points) for best centroid
-        let largest = geom.coordinates[0][0];
-        geom.coordinates.forEach(poly => {
-          if (poly[0].length > largest.length) largest = poly[0];
-        });
-        pts = largest;
-      }
-      if (pts.length === 0) return null;
-      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      pts.forEach(p => { 
-        if (p[0] < minLng) minLng = p[0];
-        if (p[0] > maxLng) maxLng = p[0];
-        if (p[1] < minLat) minLat = p[1];
-        if (p[1] > maxLat) maxLat = p[1];
+  // Calculate the centroid of a country from its GeoJSON geometry
+  const getCentroid = (name) => {
+    const feature = countries.features?.find(f => f.properties.ADMIN === name);
+    if (!feature) return null;
+    const geom = feature.geometry;
+    let pts = [];
+    if (geom.type === 'Polygon') {
+      pts = geom.coordinates[0];
+    } else if (geom.type === 'MultiPolygon') {
+      // Use the largest polygon (most points) for best centroid
+      let largest = geom.coordinates[0][0];
+      geom.coordinates.forEach(poly => {
+        if (poly[0].length > largest.length) largest = poly[0];
       });
-      return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-    };
-
-    const countryStats = {};
-    purchasedPixels.forEach(p => {
-      if (!countryStats[p.country]) {
-        countryStats[p.country] = { count: 0 };
-      }
-      countryStats[p.country].count += (p.amount || 1);
+      pts = largest;
+    }
+    if (pts.length === 0) return null;
+    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+    pts.forEach(p => { 
+      if (p[0] < minLng) minLng = p[0];
+      if (p[0] > maxLng) maxLng = p[0];
+      if (p[1] < minLat) minLat = p[1];
+      if (p[1] > maxLat) maxLat = p[1];
     });
+    return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+  };
 
   const playerCountryGroups = useMemo(() => {
     const groups = {};
@@ -412,40 +397,29 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
     const parent = new THREE.Group();
     
-    // Octahedron geometry looks like a classic floating sci-fi data node
-    const geometry = new THREE.OctahedronGeometry(1, 0); 
+    // Simple pixel-like geometry (Box) directly on the globe
+    const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4); 
     
-    // Glow material
+    // Pixel material
     const material = new THREE.MeshStandardMaterial({ 
       color: '#bc13fe',
       emissive: '#bc13fe',
-      emissiveIntensity: 0.8,
-      roughness: 0.2,
-      metalness: 0.8,
-      transparent: true,
-      opacity: 0.95
-    });
-    
-    // Outer wireframe shell for cyberpunk look
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-      color: '#00f3ff',
-      wireframe: true,
-      transparent: true,
-      opacity: 0.4
+      emissiveIntensity: 0.6,
+      roughness: 0.4,
+      metalness: 0.4
     });
     
     const crystal = new THREE.Mesh(geometry, material);
-    const wireframe = new THREE.Mesh(geometry, wireframeMaterial);
-    wireframe.scale.set(1.2, 1.2, 1.2); // slightly larger than inner crystal
+    // Push the pixel outwards along the local Z axis so it sits above the country polygons (altitude 0.01-0.04)
+    crystal.position.z = 0.5;
     
     const group = new THREE.Group();
     group.add(crystal);
-    group.add(wireframe);
     
     // Scale for the globe based on pixel count
     const totalPx = d.totalPixels || 1;
-    // Base size 0.6. At 100 pixels, it reaches size 2.0 (but it becomes logo at 100 anyway)
-    const scale = 0.6 + (Math.min(totalPx, 100) / 100) * 1.4;
+    // Base size 0.5. At 100 pixels, it reaches size 1.5 (but it becomes logo at 100 anyway)
+    const scale = 0.5 + (Math.min(totalPx, 100) / 100) * 1.0;
     group.scale.set(scale, scale, scale);
     
     // Hitbox for raycasting clicks (scale hitbox too)
@@ -457,6 +431,9 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     parent.add(hitBox);
     parent.__data = d;
     parent.__innerGroup = group;
+    // slightly rotate to make it look nicer
+    group.rotation.x = Math.random() * Math.PI;
+    group.rotation.y = Math.random() * Math.PI;
 
     return parent;
   };
@@ -480,6 +457,50 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       // Cinematic Ambient (Pitch black space for the night side to make it realistic)
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.015); // Almost completely dark on the night side
       scene.add(ambientLight);
+
+      // Create Animated Spaceship
+      if (!shipRef.current) {
+        const shipGroup = new THREE.Group();
+        
+        const bodyGeo = new THREE.CylinderGeometry(0.3, 0.8, 4, 8);
+        bodyGeo.rotateX(Math.PI / 2);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 0.9, roughness: 0.1 });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        
+        const wingGeo = new THREE.BoxGeometry(4, 0.1, 1.5);
+        const wingMat = new THREE.MeshStandardMaterial({ color: '#ff2a2a', metalness: 0.5 });
+        const wing = new THREE.Mesh(wingGeo, wingMat);
+        wing.position.set(0, 0, -1);
+        
+        const cockpitGeo = new THREE.SphereGeometry(0.4, 16, 16);
+        cockpitGeo.scale(1, 0.5, 2);
+        const cockpitMat = new THREE.MeshPhysicalMaterial({ color: '#00d0ff', transmission: 0.9, opacity: 1, transparent: true, roughness: 0 });
+        const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
+        cockpit.position.set(0, 0.4, 0.5);
+
+        const engineMat = new THREE.MeshBasicMaterial({ color: '#00ffff' });
+        const engine1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.4, 8), engineMat);
+        engine1.rotateX(Math.PI / 2);
+        engine1.position.set(-0.8, 0, -2);
+        const engine2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.4, 8), engineMat);
+        engine2.rotateX(Math.PI / 2);
+        engine2.position.set(0.8, 0, -2);
+
+        const engineLight = new THREE.PointLight('#00ffff', 1.5, 20);
+        engineLight.position.set(0, 0, -3);
+        
+        shipGroup.add(body, wing, cockpit, engine1, engine2, engineLight);
+        
+        // Point nose along the path of orbit
+        shipGroup.rotation.y = Math.PI / 2;
+        // Push out into orbit (globe radius is 100)
+        shipGroup.position.set(0, 0, 105);
+
+        const pivot = new THREE.Group();
+        pivot.add(shipGroup);
+        scene.add(pivot);
+        shipRef.current = { pivot, shipGroup, time: 0 };
+      }
 
       // The Sun (Directional Light for casting daylight based on real time)
       const sunLight = new THREE.DirectionalLight(0xffffff, 4.5); 
@@ -532,6 +553,32 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         const sunPos = globeEl.current.getCoords(sunLat, sunLng, 12); 
         sunLight.position.set(sunPos.x, sunPos.y, sunPos.z);
         sunMesh.position.set(sunPos.x, sunPos.y, sunPos.z);
+
+        const pov = globeEl.current.pointOfView();
+        // Only show alliances when zoomed in very closely (e.g. altitude < 0.8)
+        const shouldShowAlliances = pov.altitude < 0.8;
+        
+        document.querySelectorAll('.alliance-crest-marker').forEach(el => {
+           if (shouldShowAlliances) {
+              el.style.opacity = '1';
+              el.style.pointerEvents = 'auto';
+           } else {
+              el.style.opacity = '0';
+              el.style.pointerEvents = 'none';
+           }
+        });
+
+        // Animate Spaceship
+        if (shipRef.current) {
+           shipRef.current.time += 0.002;
+           const t = shipRef.current.time;
+           shipRef.current.pivot.rotation.y = t * 2; // Orbit around globe
+           shipRef.current.pivot.rotation.x = Math.sin(t) * 0.4; // Wobble latitude
+           
+           // Ship banking and bobbing
+           shipRef.current.shipGroup.position.z = 104 + Math.sin(t * 8) * 1.5;
+           shipRef.current.shipGroup.rotation.z = Math.sin(t * 2) * 0.3; 
+        }
         
         animationFrameId = requestAnimationFrame(updatePositions);
       };
@@ -633,17 +680,25 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     <div className="absolute inset-0 pointer-events-auto">
       <Globe
         ref={globeEl}
-        globeImageUrl={isMobile ? "//unpkg.com/three-globe/example/img/earth-dark.jpg" : "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"}
+        globeImageUrl={null}
         animateIn={false}
         backgroundColor="rgba(0,0,0,0)"
         rendererConfig={{ antialias: false, powerPreference: "high-performance", alpha: true }}
+        onGlobeReady={() => {
+           if (globeEl.current) {
+              const material = globeEl.current.globeMaterial();
+              material.color = new THREE.Color(0x061122); // HD Deep ocean vector color
+              material.roughness = 0.5;
+              material.metalness = 0.1;
+           }
+        }}
         
         // Polygons (Countries)
         polygonsData={countries.features}
         polygonAltitude={({ properties: d }) => d === hoverD ? 0.04 : 0.01}
         polygonCapColor={({ properties: d }) => {
-          if (d === hoverD) return 'rgba(0, 243, 255, 0.3)';
-          return 'rgba(255, 255, 255, 0.0)';
+          if (d === hoverD) return 'rgba(0, 243, 255, 0.4)';
+          return 'rgba(10, 25, 15, 0.9)'; // Solid HD landmass color
         }}
         polygonCapMaterial={({ properties: d }) => {
           const countryName = d.ADMIN;
@@ -698,6 +753,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
           return '#00f3ff';
         }}
         polygonLabel={({ properties: d }) => {
+          if (window.isHoveringAlliance) return '';
           const iso = getIsoByName(d.ADMIN);
           const flagHtml = iso ? `<img src="https://flagcdn.com/w20/${iso}.png" style="width: 20px; height: auto; max-height: 14px; border-radius: 2px; vertical-align: middle; margin-right: 4px; box-shadow: 0 0 3px rgba(255,255,255,0.3);" />` : '🌍 ';
           
@@ -798,7 +854,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             } catch(e) {}
             
             el.innerHTML = `
-              <div style="pointer-events: none; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; animation: floatCrest 4s ease-in-out infinite;">
+              <div class="alliance-crest-marker" style="pointer-events: auto; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; animation: floatCrest 4s ease-in-out infinite; transition: opacity 0.3s ease;">
                  <style>
                     @keyframes floatCrest {
                        0%, 100% { transform: translate(-50%, -50%) translateY(0); }
@@ -824,7 +880,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             `;
             let dragStartX = 0;
             let dragStartY = 0;
+            el.onmouseenter = () => { window.isHoveringAlliance = true; };
+            el.onmouseleave = () => { window.isHoveringAlliance = false; };
             el.ontouchstart = (e) => {
+               window.isHoveringAlliance = true;
                dragStartX = e.touches[0].clientX;
                dragStartY = e.touches[0].clientY;
             };
@@ -835,6 +894,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                }));
             };
             el.ontouchend = (e) => {
+               window.isHoveringAlliance = false;
                e.stopPropagation();
                const dx = Math.abs(e.changedTouches[0].clientX - dragStartX);
                const dy = Math.abs(e.changedTouches[0].clientY - dragStartY);
