@@ -78,6 +78,16 @@ function App() {
   const handleUserLogin = async (user) => {
     // Check if profile exists
     const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    const forceWelcomeBadge = () => {
+      const savedMedals = JSON.parse(localStorage.getItem('hexglobe_special_medals') || '[]');
+      if (!savedMedals.includes('welcome_badge')) {
+         const newMedals = [...savedMedals, 'welcome_badge'];
+         localStorage.setItem('hexglobe_special_medals', JSON.stringify(newMedals));
+         // Force a small delay then reload to show the badge if it was just added
+         setTimeout(() => window.location.reload(), 500);
+      }
+    };
+
     if (error && error.code === 'PGRST116') {
       // Profile doesn't exist, create it with welcome bonus
       const { data: newProfile, error: insertError } = await supabase.from('profiles').insert([
@@ -86,17 +96,21 @@ function App() {
       
       if (!insertError && newProfile) {
         setUserBalance(newProfile.balance);
-        const savedMedals = JSON.parse(localStorage.getItem('hexglobe_special_medals') || '[]');
-        if (!savedMedals.includes('welcome_badge')) {
-           localStorage.setItem('hexglobe_special_medals', JSON.stringify([...savedMedals, 'welcome_badge']));
-        }
+        forceWelcomeBadge();
+      } else {
+        console.error("Insert error:", insertError);
+        forceWelcomeBadge(); // Give badge anyway locally
       }
     } else if (data) {
        // Profile exists, load balance
        setUserBalance(data.balance);
        const savedMedals = JSON.parse(localStorage.getItem('hexglobe_special_medals') || '[]');
-       const newMedals = Array.from(new Set([...savedMedals, ...(data.badges || [])]));
+       const newMedals = Array.from(new Set([...savedMedals, ...(data.badges || []), 'welcome_badge']));
        localStorage.setItem('hexglobe_special_medals', JSON.stringify(newMedals));
+       
+       if (!savedMedals.includes('welcome_badge')) {
+          setTimeout(() => window.location.reload(), 500);
+       }
     }
   };
   
