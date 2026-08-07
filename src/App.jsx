@@ -770,7 +770,7 @@ function App() {
         }} 
         onPixelClick={(pixel) => {
           if(!hasStarted) return;
-          if (pixel.type === 'logo') {
+          if (pixel.type === 'logo' || pixel.isGroupedPlayer) {
              setSelectedUserProfile(pixel.name);
              setSelectedPixel(null);
           } else {

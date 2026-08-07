@@ -135,11 +135,37 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
     };
 
+    const countryStats = {};
     purchasedPixels.forEach(p => {
       if (!countryStats[p.country]) {
         countryStats[p.country] = { count: 0 };
       }
-      countryStats[p.country].count += 1;
+      countryStats[p.country].count += (p.amount || 1);
+    });
+
+  const playerCountryGroups = useMemo(() => {
+    const groups = {};
+    purchasedPixels.forEach(p => {
+      const key = `${p.country}_${p.name}`;
+      if (!groups[key]) {
+        groups[key] = { ...p, totalPixels: 0, isGroupedPlayer: true };
+      }
+      groups[key].totalPixels += (p.amount || 1);
+    });
+    return Object.values(groups);
+  }, [purchasedPixels]);
+
+  // Compute HTML Overlays
+  const htmlElements = useMemo(() => {
+    const elements = [];
+
+    // Calculate country totals for counters
+    const countryStats = {};
+    purchasedPixels.forEach(p => {
+      if (!countryStats[p.country]) {
+        countryStats[p.country] = { count: 0 };
+      }
+      countryStats[p.country].count += (p.amount || 1);
     });
 
     // Add a live counter badge for each active country at its centroid
@@ -174,20 +200,14 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       elements.push({ ...worldBoss, type: 'ufo-hp' });
     }
 
-    // Calculate global player pixel counts to determine ranks
-    const playerPixelCounts = {};
-    purchasedPixels.forEach(p => {
-       playerPixelCounts[p.name] = (playerPixelCounts[p.name] || 0) + (p.amount || 1);
-    });
-
-    // Add HTML logos ONLY FOR UNIQUE PLAYERS IN EACH COUNTRY to prevent massive lag
-    const seenPlayers = new Set();
-    purchasedPixels.forEach(p => {
-      const key = `${p.country}_${p.name}`;
-      if (!seenPlayers.has(key)) {
-        seenPlayers.add(key);
-        // Allow rendering all logos on mobile as requested by user
-        elements.push({ ...p, type: 'logo', totalPixels: playerPixelCounts[p.name] || 1 });
+    // Add HTML logos ONLY if they have >= 100 pixels in that country
+    playerCountryGroups.forEach(group => {
+      if (group.totalPixels >= 100) {
+        elements.push({ 
+           ...group, 
+           type: 'logo', 
+           isGlobalVisible: group.totalPixels >= 500 
+        });
       }
     });
 
@@ -422,11 +442,14 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     group.add(crystal);
     group.add(wireframe);
     
-    // Scale for the globe
-    group.scale.set(0.6, 0.6, 0.6);
+    // Scale for the globe based on pixel count
+    const totalPx = d.totalPixels || 1;
+    // Base size 0.6. At 100 pixels, it reaches size 2.0 (but it becomes logo at 100 anyway)
+    const scale = 0.6 + (Math.min(totalPx, 100) / 100) * 1.4;
+    group.scale.set(scale, scale, scale);
     
-    // Hitbox for raycasting clicks
-    const hitBoxGeo = new THREE.SphereGeometry(2.0, 8, 8);
+    // Hitbox for raycasting clicks (scale hitbox too)
+    const hitBoxGeo = new THREE.SphereGeometry(2.0 * scale, 8, 8);
     const hitBoxMat = new THREE.MeshBasicMaterial({ visible: false });
     const hitBox = new THREE.Mesh(hitBoxGeo, hitBoxMat);
     
@@ -715,7 +738,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         arcStroke={3.0}
 
         // Animated Pixels and UFO
-        customLayerData={[...purchasedPixels.map(p => ({...p, isPixel: true})), ...(worldBoss && worldBoss.active ? [{...worldBoss, isUFO: true}] : [])]}
+        customLayerData={[
+          ...playerCountryGroups.filter(g => g.totalPixels < 100).map(g => ({...g, isPixel: true})), 
+          ...(worldBoss && worldBoss.active ? [{...worldBoss, isUFO: true}] : [])
+        ]}
         customThreeObject={createCustomObject}
         customThreeObjectUpdate={(obj, d) => {
           if (!obj.__innerGroup) return;
@@ -760,8 +786,9 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             `;
           } else if (d.type === 'tooltip') {
             el.innerHTML = `
-              <div style="background: rgba(20,20,35,0.9); border: 1px solid #bc13fe; border-radius: 8px; padding: 4px 10px; color: white; font-family: sans-serif; font-size: 13px; font-weight: bold; pointer-events: none; white-space: nowrap; box-shadow: 0 0 15px rgba(188,19,254,0.5); transform: translate(-50%, -100%);">
-                👤 ${d.name || 'Jucător'}
+              <div style="background: rgba(20,20,35,0.9); border: 1px solid #bc13fe; border-radius: 8px; padding: 4px 10px; color: white; font-family: sans-serif; font-size: 13px; font-weight: bold; pointer-events: none; white-space: nowrap; box-shadow: 0 0 15px rgba(188,19,254,0.5); transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span>👤 ${d.name || 'Jucător'}</span>
+                ${d.website ? `<span style="font-size: 10px; color: #00f3ff;">🌐 ${d.website.substring(0,20)}${d.website.length > 20 ? '...' : ''}</span>` : ''}
               </div>
             `;
           } else if (d.type === 'alliance-crest') {
