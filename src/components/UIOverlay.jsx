@@ -89,7 +89,7 @@ export default function UIOverlay({
   useEffect(() => {
     const templates = [
       // Standard events
-      "</span><span class='font-bold text-white'>{u}</span> a cumpărat pixelul #{p} în <span class='text-neonCyan'>{c}</span>",
+      "</span><span class='font-bold text-white'>{u}</span> și-a înfipt steagul pe un pixel nou din <span class='text-neonCyan'>{c}</span>! 🚀 (Px. #{p})",
       "</span><span class='font-bold text-red-400'>{u}</span> a donat 50 pixeli pentru Banca Centrală",
       "</span><span class='font-bold text-white'>{u}</span> a deblocat medalia Cuceritor! 🏆",
       "</span><span class='font-bold text-purple-400'>{u}</span> a activat Rolul de Dictator 👑",
