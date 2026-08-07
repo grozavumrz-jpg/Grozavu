@@ -130,18 +130,19 @@ export default function AllianceDetailsModal({ alliance, purchasedPixels, onClos
 
            {/* Stats Grid */}
            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-center">
-                 <MapPin className="w-5 h-5 text-neonCyan mx-auto mb-1 opacity-70" />
-                 <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Zona Controlată</div>
-                 <div className="text-xs font-bold text-white">{alliance.countryA}</div>
-                 <div className="text-xs font-bold text-white">{alliance.countryB}</div>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-center flex flex-col items-center justify-center">
+                 <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 border-b border-white/10 pb-1 w-full">Țara de Origine</div>
+                 <div className="text-sm font-black text-[#00f3ff] drop-shadow-[0_0_5px_rgba(0,243,255,0.5)] mb-2 mt-1">{alliance.countryA}</div>
+                 
+                 <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 border-b border-white/10 pb-1 w-full">Țări Controlate</div>
+                 <div className="text-xs font-bold text-white mt-1">{alliance.countryB}</div>
               </div>
               
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-center">
-                 <Activity className="w-5 h-5 text-red-400 mx-auto mb-1 opacity-70" />
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-center flex flex-col items-center justify-center">
+                 <Activity className="w-6 h-6 text-red-400 mx-auto mb-2 opacity-80" />
                  <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Putere Militară</div>
-                 <div className="text-sm font-bold text-white">{pixelsA + pixelsB} Pixeli</div>
-                 <div className="text-[10px] text-green-400">Armată Activă</div>
+                 <div className="text-lg font-black text-white glow-text">{pixelsA + pixelsB} <span className="text-xs font-normal">Pixeli</span></div>
+                 <div className="text-[10px] text-green-400 mt-2 bg-green-900/30 px-2 py-1 rounded-full border border-green-500/30">Armată Activă</div>
               </div>
            </div>
 

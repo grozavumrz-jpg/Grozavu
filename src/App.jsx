@@ -364,6 +364,8 @@ function App() {
     window.addEventListener('mapPixelClick', handleMapPixelClick);
     const handleMapAllianceClick = (e) => {
       setSelectedAlliance(e.detail);
+      window.isGlobeInteractionBlocked = Date.now();
+      setSelectedCountry(null);
     };
     window.addEventListener('mapAllianceClick', handleMapAllianceClick);
 
@@ -755,6 +757,7 @@ function App() {
         selectedCountry={selectedCountry}
         onCountryClick={(country) => {
             if(!hasStarted) return;
+            if (window.isGlobeInteractionBlocked && Date.now() - window.isGlobeInteractionBlocked < 300) return;
             setSelectedCountry(country);
             setSelectedPixel(null);
             setSelectedLogoName(null);
