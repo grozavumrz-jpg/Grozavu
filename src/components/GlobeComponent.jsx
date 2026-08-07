@@ -81,11 +81,12 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       'Norway': 'no',
       'Somaliland': 'so',
       'Kosovo': 'xk'
-
+    };
     if (overrides[name]) return overrides[name];
     const feature = countries.features?.find(f => f.properties.ADMIN === name);
     const iso = feature ? feature.properties.ISO_A2?.toLowerCase() : null;
     return (iso && iso !== '-99') ? iso : null;
+  };
 
 
   // Calculate html tooltips and live counters
@@ -119,7 +120,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         if (p[1] > maxLat) maxLat = p[1];
       });
       return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-
+    };
 
     purchasedPixels.forEach(p => {
       if (!countryStats[p.country]) {
@@ -222,9 +223,9 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       const ufoBar = e.target.closest('.ufo-hp-bar');
       if (ufoBar && worldBoss && worldBoss.active) {
          e.preventDefault();
-
          if (onUfoClick) onUfoClick();
       }
+    };
 
     window.addEventListener('pointerdown', handleGlobalClick, { capture: true });
     window.addEventListener('click', handleGlobalClick, { capture: true });
@@ -233,7 +234,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       window.removeEventListener('pointerdown', handleGlobalClick, { capture: true });
       window.removeEventListener('click', handleGlobalClick, { capture: true });
       window.removeEventListener('dblclick', handleGlobalClick, { capture: true });
-
+    };
   }, [worldBoss, onUfoClick]);
 
   // High Performance Visual Reactivity (Pulsing Territories)
@@ -257,7 +258,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         }
       });
       frameId = requestAnimationFrame(animate);
-
+    };
+    
     animate();
     return () => cancelAnimationFrame(frameId);
   }, [activeAttacks]);
@@ -300,6 +302,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
          let sumLng = 0, sumLat = 0;
          pts.forEach(p => { sumLng += p[0]; sumLat += p[1]; });
          return { lat: sumLat / pts.length, lng: sumLng / pts.length };
+       };
 
 
        if (targetPixels.length > 0) {
@@ -417,7 +420,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     parent.__innerGroup = group;
 
     return parent;
-
+  };
 
   // Cinematic Solar System Logic (Real-time UTC Day/Night Sync)
   useEffect(() => {
@@ -467,6 +470,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
       cleanupLights = () => {
         scene.remove(ambientLight, sunLight, sunMesh);
+      };
 
 
       // Real-Time Position Loop for UTC Day/Night
@@ -491,6 +495,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         sunMesh.position.set(sunPos.x, sunPos.y, sunPos.z);
         
         animationFrameId = requestAnimationFrame(updatePositions);
+      };
 
 
       updatePositions();
@@ -499,7 +504,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       cleanupLights();
-
+    };
   }, []);
 
   // Watch for selectedCountry prop changes to fly the camera
@@ -768,6 +773,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             el.onclick = (e) => {
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
+               }));
+            };
 
 
           } else if (d.type === 'ufo-hp') {
@@ -857,12 +864,6 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               `;
             }
-            
-
-
-
-
-
           }
           return el;
         }}
