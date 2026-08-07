@@ -421,22 +421,22 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
     const parent = new THREE.Group();
     
-    // Simple pixel-like geometry (Box) directly on the globe
-    const geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0); 
+    // Make pixels MASSIVE and unmissable so we can debug their placement
+    const geometry = new THREE.BoxGeometry(2.0, 2.0, 2.0); 
     
     // Pixel material
     const material = new THREE.MeshStandardMaterial({ 
       color: '#bc13fe',
       emissive: '#bc13fe',
-      emissiveIntensity: 0.6,
-      roughness: 0.4,
-      metalness: 0.4
+      emissiveIntensity: 1.0, // Glow very brightly
+      roughness: 0.1,
+      metalness: 0.8
     });
     
     const crystal = new THREE.Mesh(geometry, material);
     // Push the pixel outwards along the local Z axis so it sits ABOVE the country polygons
     // Country altitude is 0.01 (1 unit thick) to 0.04 (4 units thick). 
-    crystal.position.z = 2.5;
+    crystal.position.z = 4.0;
     
     const group = new THREE.Group();
     group.add(crystal);

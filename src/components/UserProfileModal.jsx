@@ -142,38 +142,39 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
            </div>
 
            {/* Player Interactions */}
-           {username !== currentUser && (
-             <div className="flex gap-2 mb-6">
-               <button 
-                 onClick={() => {
-                   if (onOpenChat) {
-                     onOpenChat(username);
-                     onClose();
-                   } else {
-                     alert("Chat în privat funcționalitate în curând!");
-                   }
-                 }}
-                 className="flex-1 bg-[#1a1a2e] hover:bg-[#252542] border border-[#bc13fe]/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-               >
-                 <MessageSquare className="w-3.5 h-3.5 text-[#bc13fe]" />
-                 Mesaj
-               </button>
-               <button 
-                 onClick={() => alert(`Ai trimis o invitație de alianță către ${username}!`)}
-                 className="flex-1 bg-[#152010] hover:bg-[#1f2f18] border border-green-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-               >
-                 <Shield className="w-3.5 h-3.5 text-green-500" />
-                 Alianță
-               </button>
-               <button 
-                 onClick={() => setShowTrade(!showTrade)}
-                 className="flex-1 bg-[#251500] hover:bg-[#352000] border border-orange-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-               >
-                 <RefreshCw className="w-3.5 h-3.5 text-orange-500" />
-                 Trade
-               </button>
-             </div>
-           )}
+           <div className="flex gap-2 mb-6">
+             <button 
+               disabled={username === currentUser}
+               onClick={() => {
+                 if (onOpenChat) {
+                   onOpenChat(username);
+                   onClose();
+                 } else {
+                   alert("Chat în privat funcționalitate în curând!");
+                 }
+               }}
+               className={`flex-1 ${username === currentUser ? 'bg-gray-800 opacity-50 cursor-not-allowed' : 'bg-[#1a1a2e] hover:bg-[#252542]'} border border-[#bc13fe]/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5`}
+             >
+               <MessageSquare className="w-3.5 h-3.5 text-[#bc13fe]" />
+               Mesaj
+             </button>
+             <button 
+               disabled={username === currentUser}
+               onClick={() => alert(`Ai trimis o invitație de alianță către ${username}!`)}
+               className={`flex-1 ${username === currentUser ? 'bg-gray-800 opacity-50 cursor-not-allowed' : 'bg-[#152010] hover:bg-[#1f2f18]'} border border-green-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5`}
+             >
+               <Shield className="w-3.5 h-3.5 text-green-500" />
+               Alianță
+             </button>
+             <button 
+               disabled={username === currentUser}
+               onClick={() => setShowTrade(!showTrade)}
+               className={`flex-1 ${username === currentUser ? 'bg-gray-800 opacity-50 cursor-not-allowed' : 'bg-[#251500] hover:bg-[#352000]'} border border-orange-500/30 text-white rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1.5`}
+             >
+               <RefreshCw className="w-3.5 h-3.5 text-orange-500" />
+               Trade
+             </button>
+           </div>
 
            {showTrade && username !== currentUser && (
              <div className="bg-[#15151a] border border-orange-500/30 rounded-xl p-4 mb-6 animate-in slide-in-from-top-2">
