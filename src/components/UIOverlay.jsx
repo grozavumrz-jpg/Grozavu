@@ -779,7 +779,7 @@ export default function UIOverlay({
             </div>
           </div>
         ) : selectedPixel ? (
-          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/60 md:bg-black/40 backdrop-blur-2xl md:glass-panel w-full md:w-96 max-h-[50vh] h-auto flex-col rounded-t-[2.5rem] md:rounded-2xl p-6 pointer-events-auto border-t-2 md:border border-neonPurple/40 transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 z-50 shadow-[0_-15px_50px_rgba(188,19,254,0.15)] md:shadow-[0_0_20px_rgba(188,19,254,0.15)]">
+          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/60 md:bg-black/40 backdrop-blur-2xl md:glass-panel w-full md:w-96 max-h-[50vh] overflow-y-auto h-auto flex-col rounded-t-[2.5rem] md:rounded-2xl p-6 pointer-events-auto border-t-2 md:border border-neonPurple/40 transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 z-50 shadow-[0_-15px_50px_rgba(188,19,254,0.15)] md:shadow-[0_0_20px_rgba(188,19,254,0.15)]">
              <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="text-2xl font-bold text-white uppercase flex items-center gap-2">

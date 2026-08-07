@@ -794,7 +794,7 @@ function App() {
 
 
       {hasStarted && (
-        <div className={selectedCountry ? "hidden md:block" : "block"}>
+        <div className={(selectedCountry || selectedPixel) ? "hidden md:block" : "block"}>
           <BottomChatBar 
             countryName={selectedCountry ? selectedCountry.ADMIN : 'Lume'}
             equippedCosmetics={equippedCosmetics}
