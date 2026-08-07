@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, AtSign, ChevronDown, ChevronUp, Shield, ArrowRight } from 'lucide-react';
 import { getRank } from '../utils/ranks';
 import AlliancePanel from './AlliancePanel';
@@ -8,6 +8,7 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
   const [showAlliancePanel, setShowAlliancePanel] = useState(false);
   const [isoMap, setIsoMap] = useState({});
   const [investAmount, setInvestAmount] = useState({});
+  const dragRef = useRef(false);
   const bankFund = countryBankFunds[country.ADMIN] || 0;
 
   useEffect(() => {
@@ -184,7 +185,17 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
           </div>
 
           {/* Right Column: Users List */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar bg-black/10">
+          <div 
+            className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar bg-black/10"
+            onPointerDown={(e) => dragRef.current = { x: e.clientX, y: e.clientY, dragged: false }}
+            onPointerMove={(e) => {
+               if (dragRef.current && !dragRef.current.dragged) {
+                  const dx = Math.abs(e.clientX - dragRef.current.x);
+                  const dy = Math.abs(e.clientY - dragRef.current.y);
+                  if (dx > 10 || dy > 10) dragRef.current.dragged = true;
+               }
+            }}
+          >
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
               <span className="text-neonCyan">⭐</span> Jucători Top
             </h4>
@@ -197,7 +208,13 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
                   {/* User Row (Clickable) */}
                   <div 
                     className="p-4 flex justify-between items-center cursor-pointer"
-                    onClick={() => setExpandedUser(isExpanded ? null : user.name)}
+                    onClick={(e) => {
+                      if (dragRef.current && dragRef.current.dragged) {
+                        e.preventDefault();
+                        return;
+                      }
+                      setExpandedUser(isExpanded ? null : user.name);
+                    }}
                   >
                     <div className="flex items-center gap-4">
                       <div className="font-bold text-gray-500 w-6 text-right">#{idx + 1}</div>
