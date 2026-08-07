@@ -719,7 +719,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         
         // Polygons (Countries)
         polygonsData={countries.features}
-        polygonAltitude={({ properties: d }) => d === hoverD ? 0.04 : 0.01}
+        polygonAltitude={({ properties: d }) => d === hoverD ? 0.04 : (isMobile ? 0.02 : 0.01)}
         polygonCapColor={({ properties: d }) => {
           if (d === hoverD) return 'rgba(0, 243, 255, 0.4)';
           return 'rgba(10, 25, 15, 0.9)'; // Solid HD landmass color
@@ -769,12 +769,13 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
           return undefined;
         }}
         polygonSideColor={({ properties: d }) => {
+          if (isMobile) return undefined; // Completely disable 3D extrusion walls on mobile to stop flickering
           if (conqueredCountries && conqueredCountries[d.ADMIN]) return 'rgba(255, 0, 0, 0.3)';
           return 'rgba(0, 243, 255, 0.15)';
         }}
         polygonStrokeColor={({ properties: d }) => {
-          if (conqueredCountries && conqueredCountries[d.ADMIN]) return '#ff0000';
-          return '#00f3ff';
+          if (conqueredCountries && conqueredCountries[d.ADMIN]) return isMobile ? 'rgba(150, 0, 0, 0.4)' : '#ff0000';
+          return isMobile ? 'rgba(0, 168, 181, 0.3)' : '#00f3ff'; // Softer, dimmer border on mobile to prevent eye strain/flickering
         }}
         polygonLabel={({ properties: d }) => {
           if (window.isHoveringAlliance) return '';
