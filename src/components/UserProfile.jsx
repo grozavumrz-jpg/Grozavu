@@ -71,19 +71,28 @@ export default function UserProfile({ isOpen, onClose, purchasedPixels = [], con
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0a0a1a]/95 border border-[#bc13fe]/40 rounded-2xl shadow-[0_0_30px_rgba(188,19,254,0.3)] flex flex-col overflow-hidden glass-panel">
         
         {/* Header */}
-        <div className="p-6 border-b border-[#00f3ff]/30 flex justify-between items-start bg-gradient-to-r from-[#bc13fe]/10 to-transparent shrink-0">
-          <div className="flex items-center gap-6">
+        <div className="p-4 md:p-6 border-b border-[#00f3ff]/30 flex flex-col md:flex-row justify-between items-start md:items-center bg-gradient-to-r from-[#bc13fe]/10 to-transparent shrink-0 gap-4 relative">
+          
+          {/* Close button - absolute top right on mobile */}
+          <button 
+            onClick={onClose} 
+            className="absolute top-4 right-4 md:static p-2 rounded-full bg-white/10 md:bg-transparent hover:bg-white/20 text-gray-200 hover:text-white transition-colors z-20"
+          >
+            <X className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
+
+          <div className="flex items-center gap-4 md:gap-6 pr-10 md:pr-0">
             <div 
-              className="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#00f3ff] to-[#bc13fe] flex items-center justify-center border-2 border-white/20 shadow-lg cursor-pointer group overflow-hidden"
+              className="relative w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-full bg-gradient-to-br from-[#00f3ff] to-[#bc13fe] flex items-center justify-center border-2 border-white/20 shadow-lg cursor-pointer group overflow-hidden"
               onClick={handleAvatarClick}
             >
               {avatar ? (
                 <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <UserIcon className="w-10 h-10 text-white" />
+                <UserIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
               )}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <Camera className="w-6 h-6 text-white" />
+                <Camera className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <input 
                 type="file" 
@@ -94,18 +103,19 @@ export default function UserProfile({ isOpen, onClose, purchasedPixels = [], con
               />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-white tracking-wider flex items-center gap-3">
-                PROFIL <span className="text-[#bc13fe]">PERSONAL</span>
+              <h2 className="text-xl md:text-3xl font-bold text-white tracking-wider flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <span>PROFIL</span> <span className="text-[#bc13fe]">PERSONAL</span>
               </h2>
-              <div className="flex items-center gap-2 mt-2">
-                <Shield className={`w-5 h-5 ${rank.color}`} />
-                <span className={`font-bold uppercase tracking-widest ${rank.color}`}>{rank.name}</span>
+              <div className="flex items-center gap-2 mt-1 md:mt-2">
+                <Shield className={`w-4 h-4 md:w-5 md:h-5 ${rank.color}`} />
+                <span className={`font-bold uppercase tracking-widest text-xs md:text-sm ${rank.color}`}>{rank.name}</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          
+          <div className="flex items-center gap-4 w-full md:w-auto mt-2 md:mt-0">
             <button 
-              className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-lg"
+              className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white text-xs font-bold py-2 md:py-2.5 px-4 rounded-xl transition-all shadow-lg"
               onClick={() => alert("Această opțiune va salva profilul tău anonim (bazat pe dispozitiv) într-un cont Google, astfel încât să îl poți accesa și de pe alte telefoane sau PC-uri. Funcția va fi activată la lansarea oficială!")}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -115,12 +125,6 @@ export default function UserProfile({ isOpen, onClose, purchasedPixels = [], con
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
               Conectează Google
-            </button>
-            <button 
-              onClick={onClose} 
-              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-            >
-              <X className="w-6 h-6" />
             </button>
           </div>
         </div>
