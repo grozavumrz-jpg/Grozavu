@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Globe2, MapPin, ChevronDown, Crown, Hash } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 import { getRank } from '../utils/ranks';
 
 const mockMessages = [
@@ -55,52 +56,87 @@ export default function BottomChatBar({
   // National online = proportional to pixels + small random base
   const nationalOnline = Math.max(1, Math.floor((countryPixelCount / Math.max(purchasedPixels.length, 1)) * totalOnline) + Math.floor(Date.now() / 200000) % 8 + 3);
 
-  const getStorageKey = () => `hexglobe_chat_${channel === 'local' ? countryName : 'international'}`;
+  const channelId = channel === 'local' ? `country_${countryName}` : 'global';
 
   useEffect(() => {
-    const saved = localStorage.getItem(getStorageKey());
-    setMessages(saved ? JSON.parse(saved) : []);
-  }, [channel, countryName]);
-
-  useEffect(() => {
-    if (messages.length > 0) localStorage.setItem(getStorageKey(), JSON.stringify(messages));
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, channel, countryName]);
-
-  useEffect(() => {
-    let timeoutId;
-    const generateNextMessage = () => {
-      const isGlobal = channel === 'global';
-      const msgList = isGlobal ? internationalMessages : mockMessages;
-      const userList = isGlobal ? intUsernames : mockUsernames;
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        user: userList[Math.floor(Math.random() * userList.length)],
-        text: msgList[Math.floor(Math.random() * msgList.length)],
-        timestamp: new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
-        isLocal: false,
-        mockPixels: Math.floor(Math.random() * 50) + 1,
-        isDictator: Math.random() > 0.9,
-      }].slice(-60));
-      timeoutId = setTimeout(generateNextMessage, Math.floor(Math.random() * 25000) + 12000);
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('channel', channelId)
+        .order('created_at', { ascending: true })
+        .limit(60);
+      
+      if (data) {
+        setMessages(data.map(m => ({
+          id: m.id,
+          user: m.sender_email,
+          text: m.content,
+          timestamp: new Date(m.created_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
+          isLocal: m.sender_email === userName,
+          isDictator: false // simplified for real chat
+        })));
+      }
     };
-    timeoutId = setTimeout(generateNextMessage, Math.floor(Math.random() * 8000) + 4000);
-    return () => clearTimeout(timeoutId);
-  }, [channel]);
+    
+    fetchMessages();
 
-  const handleSend = (e) => {
+    const subscription = supabase
+      .channel(`public:messages:${channelId}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages',
+        filter: `channel=eq.${channelId}`
+      }, payload => {
+        const m = payload.new;
+        setMessages(prev => {
+          if (prev.find(msg => msg.id === m.id)) return prev;
+          const newMsgs = [...prev, {
+            id: m.id,
+            user: m.sender_email,
+            text: m.content,
+            timestamp: new Date(m.created_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
+            isLocal: m.sender_email === userName,
+            isDictator: false
+          }];
+          return newMsgs.slice(-60);
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [channelId, userName]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
+
+    const msgText = inputText.trim();
+    setInputText('');
+
+    const tempId = Date.now().toString();
     setMessages(prev => [...prev, {
-      id: Date.now(),
+      id: tempId,
       user: userName,
-      text: inputText.trim(),
+      text: msgText,
       timestamp: new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
       isLocal: true,
       pixels: userPixelsCount,
       isDictator: activeBoosts.includes('boost_dictator'),
     }].slice(-60));
-    setInputText('');
+
+    await supabase.from('messages').insert([{
+      sender_email: userName,
+      channel: channelId,
+      content: msgText
+    }]);
   };
 
   if (!isExpanded) {

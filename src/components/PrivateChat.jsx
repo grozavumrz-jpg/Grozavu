@@ -1,70 +1,93 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, X, User } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const PrivateChat = ({ chatUser, onClose, userName = 'Eu', positionIndex = 0 }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef(null);
   
-  const storageKey = `hexglobe_pm_${chatUser}`;
+  const channelName = [userName, chatUser].sort().join('_');
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      setMessages(JSON.parse(saved));
-    }
-  }, [storageKey]);
+    // Fetch initial messages
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('channel', `private_${channelName}`)
+        .order('created_at', { ascending: true });
+        
+      if (data) {
+        setMessages(data.map(m => ({
+          id: m.id,
+          user: m.sender_email,
+          text: m.content,
+          timestamp: new Date(m.created_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
+          isLocal: m.sender_email === userName
+        })));
+      }
+    };
+    
+    fetchMessages();
+
+    // Subscribe to new messages
+    const subscription = supabase
+      .channel(`public:messages:private_${channelName}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages',
+        filter: `channel=eq.private_${channelName}`
+      }, payload => {
+        const m = payload.new;
+        setMessages(prev => {
+          // Check if message already exists (we might have added it optimistically)
+          if (prev.find(msg => msg.id === m.id)) return prev;
+          
+          return [...prev, {
+            id: m.id,
+            user: m.sender_email,
+            text: m.content,
+            timestamp: new Date(m.created_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
+            isLocal: m.sender_email === userName
+          }];
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [channelName, userName]);
 
   useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(storageKey, JSON.stringify(messages));
-    }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, storageKey]);
+  }, [messages]);
 
-  // Simulate responses from the mock user
-  useEffect(() => {
-    if (messages.length > 0 && messages[messages.length - 1].isLocal) {
-      const timeout = setTimeout(() => {
-        const randomResponses = [
-          'Salut! Cum merge treaba cu pixeli?',
-          'Ești gata pentru un atac?',
-          'Vrei să facem o alianță?',
-          'Interesant, spune-mi mai multe.',
-          'Mă pregătesc să cumpăr 10 pixeli acum.',
-          'Haha, da!',
-          'Forță! 🔥'
-        ];
-        
-        const replyMsg = {
-          id: Date.now(),
-          user: chatUser,
-          text: randomResponses[Math.floor(Math.random() * randomResponses.length)],
-          timestamp: new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
-          isLocal: false
-        };
-        
-        setMessages(prev => [...prev, replyMsg]);
-      }, 3000 + Math.random() * 5000); // Reply after 3-8 seconds
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [messages, chatUser]);
-
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
 
-    const newMsg = {
-      id: Date.now(),
+    const msgText = inputText.trim();
+    setInputText('');
+
+    // Optimistic UI update (optional, but good for UX)
+    const tempId = Date.now().toString();
+    setMessages(prev => [...prev, {
+      id: tempId,
       user: userName,
-      text: inputText.trim(),
+      text: msgText,
       timestamp: new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
       isLocal: true
-    };
+    }]);
 
-    setMessages(prev => [...prev, newMsg]);
-    setInputText('');
+    await supabase.from('messages').insert([{
+      sender_email: userName,
+      receiver_email: chatUser,
+      channel: `private_${channelName}`,
+      content: msgText
+    }]);
   };
 
   // Calculate right offset based on positionIndex so multiple chats can stack horizontally
