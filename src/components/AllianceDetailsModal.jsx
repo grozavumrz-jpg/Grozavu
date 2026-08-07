@@ -198,9 +198,9 @@ export default function AllianceDetailsModal({ alliance, purchasedPixels, onClos
                          if(!success) alert("Fonduri insuficiente!");
                       }
                    }}
-                   className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-green-600/80 hover:bg-green-500 transition-colors uppercase tracking-widest flex items-center gap-1"
+                   className="px-3 md:px-4 py-2 rounded-lg text-sm font-bold text-white bg-green-600/80 hover:bg-green-500 transition-colors uppercase tracking-widest flex items-center justify-center gap-1"
                  >
-                   🛡️ Apără
+                   🛡️ <span className="hidden md:inline">Apără</span>
                  </button>
                  <button 
                    onClick={() => {
@@ -209,9 +209,9 @@ export default function AllianceDetailsModal({ alliance, purchasedPixels, onClos
                          if(!success) alert("Fonduri insuficiente!");
                       }
                    }}
-                   className="px-4 py-2 rounded-lg text-sm font-black text-white bg-red-600 hover:bg-red-500 hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all uppercase tracking-widest flex items-center gap-1"
+                   className="px-3 md:px-4 py-2 rounded-lg text-sm font-black text-white bg-red-600 hover:bg-red-500 hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all uppercase tracking-widest flex items-center justify-center gap-1"
                  >
-                   <Swords className="w-4 h-4" /> Atacă
+                   <Swords className="w-4 h-4" /> <span className="hidden md:inline">Atacă</span>
                  </button>
               </div>
            </div>

@@ -186,8 +186,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       const key = `${p.country}_${p.name}`;
       if (!seenPlayers.has(key)) {
         seenPlayers.add(key);
-        // MOBILE PERFORMANCE: Only render logo if they have >= 10 pixels to save DOM nodes!
-        if (isMobile && (playerPixelCounts[p.name] || 1) < 5) return;
+        // Allow rendering all logos on mobile as requested by user
         elements.push({ ...p, type: 'logo', totalPixels: playerPixelCounts[p.name] || 1 });
       }
     });
