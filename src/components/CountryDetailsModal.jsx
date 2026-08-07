@@ -187,12 +187,20 @@ export default function CountryDetailsModal({ country, pixels, onClose, alliance
           {/* Right Column: Users List */}
           <div 
             className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar bg-black/10"
+            onTouchStart={(e) => dragRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, dragged: false }}
+            onTouchMove={(e) => {
+               if (dragRef.current && !dragRef.current.dragged) {
+                  const dx = Math.abs(e.touches[0].clientX - dragRef.current.x);
+                  const dy = Math.abs(e.touches[0].clientY - dragRef.current.y);
+                  if (dx > 5 || dy > 5) dragRef.current.dragged = true;
+               }
+            }}
             onPointerDown={(e) => dragRef.current = { x: e.clientX, y: e.clientY, dragged: false }}
             onPointerMove={(e) => {
                if (dragRef.current && !dragRef.current.dragged) {
                   const dx = Math.abs(e.clientX - dragRef.current.x);
                   const dy = Math.abs(e.clientY - dragRef.current.y);
-                  if (dx > 10 || dy > 10) dragRef.current.dragged = true;
+                  if (dx > 5 || dy > 5) dragRef.current.dragged = true;
                }
             }}
           >
