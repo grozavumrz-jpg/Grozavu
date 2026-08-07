@@ -795,11 +795,27 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               </div>
             `;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            el.ontouchstart = (e) => {
+               dragStartX = e.touches[0].clientX;
+               dragStartY = e.touches[0].clientY;
+            };
             el.onclick = (e) => {
                e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
                }));
+            };
+            el.ontouchend = (e) => {
+               e.stopPropagation();
+               const dx = Math.abs(e.changedTouches[0].clientX - dragStartX);
+               const dy = Math.abs(e.changedTouches[0].clientY - dragStartY);
+               if (dx < 10 && dy < 10) {
+                 window.dispatchEvent(new CustomEvent('mapAllianceClick', {
+                    detail: d.allianceData
+                 }));
+               }
             };
           } else if (d.type === 'ufo-hp') {
               el.innerHTML = `
@@ -896,9 +912,23 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               `;
             }
 
+            let dragStartX = 0;
+            let dragStartY = 0;
+            el.ontouchstart = (e) => {
+               dragStartX = e.touches[0].clientX;
+               dragStartY = e.touches[0].clientY;
+            };
             el.onclick = (e) => {
                e.stopPropagation();
                if (onPixelClick) onPixelClick(d);
+            };
+            el.ontouchend = (e) => {
+               e.stopPropagation();
+               const dx = Math.abs(e.changedTouches[0].clientX - dragStartX);
+               const dy = Math.abs(e.changedTouches[0].clientY - dragStartY);
+               if (dx < 10 && dy < 10) {
+                 if (onPixelClick) onPixelClick(d);
+               }
             };
           }
           return el;

@@ -770,7 +770,12 @@ function App() {
         }} 
         onPixelClick={(pixel) => {
           if(!hasStarted) return;
-          setSelectedPixel(pixel);
+          if (pixel.type === 'logo') {
+             setSelectedUserProfile(pixel.name);
+             setSelectedPixel(null);
+          } else {
+             setSelectedPixel(pixel);
+          }
           setSelectedCountry(null);
           setShowUfoPanel(false);
         }}
