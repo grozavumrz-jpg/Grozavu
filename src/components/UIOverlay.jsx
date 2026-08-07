@@ -39,6 +39,7 @@ export default function UIOverlay({
   const [instagram, setInstagram] = useState('');
   const [website, setWebsite] = useState('');
   const [bio, setBio] = useState('');
+  const [showSocialInputs, setShowSocialInputs] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activityFeed, setActivityFeed] = useState([]);
   const [countryMap, setCountryMap] = useState({});
@@ -650,8 +651,8 @@ export default function UIOverlay({
             </div>
 
             {/* Purchase Form (Fixed Bottom) */}
-            <div className="p-6 shrink-0">
-              <div className="bg-black/40 rounded-lg p-3 mb-4 border border-white/5 space-y-3">
+            <div className="p-4 md:p-6 shrink-0 border-t border-white/10 bg-black/60 backdrop-blur-md">
+              <div className="bg-black/40 rounded-lg p-2 md:p-3 mb-3 border border-white/5 space-y-2 max-h-[35vh] md:max-h-none overflow-y-auto custom-scrollbar">
                 <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
                   <User className="text-gray-400 w-4 h-4" />
                   <input 
@@ -662,37 +663,48 @@ export default function UIOverlay({
                     className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
                   />
                 </div>
-                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonPurple transition-colors">
-                  <AtSign className="text-gray-400 w-4 h-4" />
-                  <input 
-                    type="text" 
-                    placeholder="Instagram (Opțional)" 
-                    value={instagram}
-                    onChange={(e) => setInstagram(e.target.value)}
-                    className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
-                  />
-                </div>
-                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
-                  <Link className="text-gray-400 w-4 h-4" />
-                  <input 
-                    type="text" 
-                    placeholder="Website / TikTok (Opțional)" 
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
-                  />
-                </div>
                 
-                <div className="flex items-start gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
-                  <textarea 
-                    placeholder="Câteva cuvinte despre tine / mesaj (Opțional)" 
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    rows={2}
-                    maxLength={100}
-                    className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs resize-none"
-                  />
-                </div>
+                {!showSocialInputs ? (
+                  <button 
+                    onClick={() => setShowSocialInputs(true)}
+                    className="w-full text-left py-1 px-2 text-[10px] text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                  >
+                    <span>+ Adaugă profil social (Opțional)</span>
+                  </button>
+                ) : (
+                  <div className="space-y-2 animate-in slide-in-from-top-2">
+                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonPurple transition-colors">
+                      <AtSign className="text-gray-400 w-4 h-4" />
+                      <input 
+                        type="text" 
+                        placeholder="Instagram (Opțional)" 
+                        value={instagram}
+                        onChange={(e) => setInstagram(e.target.value)}
+                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
+                      <Link className="text-gray-400 w-4 h-4" />
+                      <input 
+                        type="text" 
+                        placeholder="Website / TikTok (Opțional)" 
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
+                      />
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
+                      <textarea 
+                        placeholder="Câteva cuvinte despre tine / mesaj (Opțional)" 
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        rows={2}
+                        maxLength={100}
+                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between items-center mb-4 px-2">
