@@ -45,20 +45,24 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
   }
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto p-4">
-      <div className="bg-[#0a0a0f] w-full max-w-[420px] max-h-full rounded-2xl flex flex-col border border-white/5 shadow-2xl overflow-hidden relative">
-        
-        {/* Top Accent Line */}
-        <div className="h-1.5 w-full shrink-0 bg-gradient-to-r from-red-500 to-orange-500"></div>
+    <div className="fixed inset-0 z-[10000] overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div className="bg-[#0a0a0f] w-full max-w-[420px] rounded-2xl flex flex-col border border-white/5 shadow-2xl relative">
+          
+          {/* Top Accent Line */}
+          <div className="h-1.5 w-full shrink-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-t-2xl"></div>
 
-        <div className="p-5 md:p-6 relative overflow-y-auto custom-scrollbar">
-           {/* Close Button */}
-           <button 
-              onClick={onClose}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-20"
-           >
-              <X className="w-4 h-4" />
-           </button>
+          {/* Fixed Header with Close Button */}
+          <div className="flex justify-end p-4 pb-0 shrink-0">
+             <button 
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-20"
+             >
+                <X className="w-4 h-4" />
+             </button>
+          </div>
+
+          <div className="p-5 md:p-6 pt-2">
 
            {/* Header Info */}
            <div className="flex items-center gap-4 mb-6 mt-2">
@@ -165,6 +169,7 @@ export default function UserProfileModal({ username, purchasedPixels, bankFunds,
               </div>
            </div>
            
+          </div>
         </div>
       </div>
     </div>
