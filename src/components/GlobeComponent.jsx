@@ -2,12 +2,21 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import * as THREE from 'three';
 
-export default function GlobeComponent({ selectedCountry, onCountryClick, onPixelClick, onUfoClick, isUfoPanelOpen, purchasedPixels = [], activeAttacks = [], conqueredCountries = {}, worldBoss, alliances = [] }) {
+const materialCache = {};
+
+export default function GlobeComponent({ selectedCountry, onCountryClick, onPixelClick, onUfoClick, isUfoPanelOpen, purchasedPixels = [], activeAttacks = [], conqueredCountries = {}, worldBoss, alliances = [], emperors = {} }) {
   const animatedMaterials = useRef({});
   const globeEl = useRef();
   const [countries, setCountries] = useState({ features: [] });
   const [hoverD, setHoverD] = useState();
   const [hoveredPixel, setHoveredPixel] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const planetsAdded = useRef(false);
 
@@ -177,6 +186,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       const key = `${p.country}_${p.name}`;
       if (!seenPlayers.has(key)) {
         seenPlayers.add(key);
+        // MOBILE PERFORMANCE: Only render logo if they have >= 10 pixels to save DOM nodes!
+        if (isMobile && (playerPixelCounts[p.name] || 1) < 5) return;
         elements.push({ ...p, type: 'logo', totalPixels: playerPixelCounts[p.name] || 1 });
       }
     });
@@ -243,6 +254,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
   // High Performance Visual Reactivity (Pulsing Territories)
   useEffect(() => {
+    if (isMobile) return; // Save CPU/GPU on mobile!
+
     let frameId;
     const animate = () => {
       const time = Date.now() / 200; // Speed of the pulse
@@ -598,10 +611,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     <div className="absolute inset-0 pointer-events-auto">
       <Globe
         ref={globeEl}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+        globeImageUrl={isMobile ? "//unpkg.com/three-globe/example/img/earth-dark.jpg" : "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"}
         animateIn={false}
         backgroundColor="rgba(0,0,0,0)"
-        rendererConfig={{ antialias: false, powerPreference: "high-performance" }}
+        rendererConfig={{ antialias: false, powerPreference: "high-performance", alpha: true }}
         
         // Polygons (Countries)
         polygonsData={countries.features}
@@ -627,6 +640,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
           }
 
           if (targetIso) {
+              if (materialCache[targetIso]) {
+                  animatedMaterials.current[d.ADMIN] = materialCache[targetIso];
+                  return materialCache[targetIso];
+              }
               const texture = new THREE.TextureLoader().load(`https://flagcdn.com/w320/${targetIso}.png`);
               texture.center.set(0.5, 0.5);
               // Squish vertically to fix vertical stretching caused by bounding boxes
@@ -641,6 +658,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                 transparent: true,
                 opacity: 0.95 // slightly more opaque to pop colors
               });
+              materialCache[targetIso] = mat;
               animatedMaterials.current[d.ADMIN] = mat;
               return mat;
           }
@@ -671,7 +689,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             </div>
           `;
         }}
-        onPolygonHover={setHoverD}
+        onPolygonHover={isMobile ? undefined : setHoverD}
         onPolygonClick={({ properties: d }, event, { lat, lng, altitude }) => {
           onCountryClick({ ...d, clickLat: lat, clickLng: lng });
         }}
@@ -726,6 +744,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         htmlElementsData={htmlElements}
         htmlElement={d => {
           const el = document.createElement('div');
+          if (['logo', 'alliance-crest', 'ufo'].includes(d.type)) {
+             el.style.pointerEvents = 'auto';
+             el.style.cursor = 'pointer';
+          }
           
           if (d.type === 'counter') {
             const flagHtml = d.iso ? `<img src="https://flagcdn.com/w20/${d.iso}.png" style="width: 20px; height: auto; max-height: 14px; border-radius: 2px; vertical-align: middle; box-shadow: 0 0 3px rgba(255,255,255,0.3);" />` : '🌍';
@@ -774,7 +796,17 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               </div>
             `;
+            el.onpointerdown = (e) => {
+               e.stopPropagation();
+            };
             el.onclick = (e) => {
+               e.stopPropagation();
+               window.dispatchEvent(new CustomEvent('mapAllianceClick', {
+                  detail: d.allianceData
+               }));
+            };
+            el.ontouchend = (e) => {
+               e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
                }));
@@ -827,10 +859,17 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             // Base size is 32px, grows progressively up to a max of 90px so they stand out but don't cover others
             let size = Math.min(90, 32 + (d.totalPixels * 0.05)); 
             
-            if (d.totalPixels >= 1000) {
+            const isEmperor = emperors && d.country && emperors[d.country] === d.name;
+            
+            if (isEmperor) {
+               finalBorderCol = '#fbbf24'; // Massive Emperor Gold
+               finalShadow = 'box-shadow: 0 0 30px rgba(251, 191, 36, 1), inset 0 0 15px rgba(251, 191, 36, 0.8);';
+               iconHtml = '<div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 28px; filter: drop-shadow(0 0 10px #fbbf24) drop-shadow(0 0 20px #f59e0b); z-index: 200; pointer-events: none; animation: pulse 2s infinite;">👑</div>';
+               extraStyles = 'z-index: 150;';
+            } else if (d.totalPixels >= 1000) {
                finalBorderCol = '#eab308'; // President (Gold)
                finalShadow = 'box-shadow: 0 0 20px rgba(234,179,8,0.8), inset 0 0 10px rgba(234,179,8,0.5);';
-               iconHtml = '<div style="position: absolute; top: -12px; right: -10px; font-size: 16px; filter: drop-shadow(0 0 5px #eab308); z-index: 10; pointer-events: none;">👑</div>';
+               iconHtml = '<div style="position: absolute; top: -12px; right: -10px; font-size: 16px; filter: drop-shadow(0 0 5px #eab308); z-index: 10; pointer-events: none;">🎩</div>';
                extraStyles = 'z-index: 100;';
             } else if (d.totalPixels >= 500) {
                finalBorderCol = '#a855f7'; // Guvernator (Purple)
@@ -846,7 +885,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
             if (logoUrl) {
               el.innerHTML = `
-                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; overflow: visible; ${finalShadow} transform: translate(-50%, -50%); pointer-events: none; position: relative; background: black; transition: all 0.2s; ${extraStyles}">
+                 <div title="${d.name}" style="cursor: pointer; width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; overflow: visible; ${finalShadow} transform: translate(-50%, -50%); pointer-events: auto; position: relative; background: black; transition: all 0.2s; ${extraStyles}">
                     <img src="${logoUrl}" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; border-radius: 4px;" />
                     ${iconHtml}
                     ${!isComplete ? `<div style="position: absolute; bottom: 0; left: 0; height: 2px; background: #00f3ff; width: ${progress}%; pointer-events: none;"></div>` : ''}
@@ -861,13 +900,25 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               const grad = `linear-gradient(135deg, hsl(${h1}, 80%, 55%), hsl(${h2}, 80%, 55%))`;
               
               el.innerHTML = `
-                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; ${finalShadow} background: ${grad}; display: flex; align-items: center; justify-content: center; color: white; font-family: Inter, sans-serif; font-size: ${size/2.5}px; font-weight: 900; transform: translate(-50%, -50%); pointer-events: none; position: relative; overflow: visible; transition: all 0.2s; ${extraStyles}">
+                 <div title="${d.name}" style="cursor: pointer; width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; ${finalShadow} background: ${grad}; display: flex; align-items: center; justify-content: center; color: white; font-family: Inter, sans-serif; font-size: ${size/2.5}px; font-weight: 900; transform: translate(-50%, -50%); pointer-events: auto; position: relative; overflow: visible; transition: all 0.2s; ${extraStyles}">
                     <span style="pointer-events: none;">${getInitials(d.name)}</span>
                     ${iconHtml}
                     ${!isComplete && logoUrl === null ? `<div style="position: absolute; bottom: 0; left: 0; height: 2px; background: #00f3ff; width: ${progress}%; pointer-events: none;"></div>` : ''}
                  </div>
               `;
             }
+
+            el.onpointerdown = (e) => {
+               e.stopPropagation(); // Prevents OrbitControls from eating the click
+            };
+            el.onclick = (e) => {
+               e.stopPropagation();
+               if (onPixelClick) onPixelClick(d);
+            };
+            el.ontouchend = (e) => {
+               e.stopPropagation();
+               if (onPixelClick) onPixelClick(d);
+            };
           }
           return el;
         }}

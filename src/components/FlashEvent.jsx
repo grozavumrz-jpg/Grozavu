@@ -85,38 +85,38 @@ const FlashEvent = () => {
   };
 
   return (
-    // Elegant slim pill banner - top center, never overlaps anything
-    <div
-      className={`fixed top-4 left-1/2 z-40 pointer-events-auto animate-in slide-in-from-top-4 duration-300`}
-      style={{ transform: 'translateX(-50%)', width: '90%', maxWidth: '400px' }}
-    >
+    // Elegant slim pill banner - top center, perfectly shrink-wrapped, no empty space
+    <div className="fixed top-4 left-1/2 z-40 pointer-events-auto animate-in slide-in-from-top-4 duration-300 -translate-x-1/2 w-max max-w-[95vw]">
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`flex flex-col gap-2 px-4 py-2 rounded-2xl border ${currentEvent.border} bg-black/90 backdrop-blur-md shadow-lg cursor-pointer transition-all duration-300`}
+        className={`flex flex-col px-4 py-2 rounded-full border ${currentEvent.border} bg-black/80 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer transition-all duration-300 justify-center overflow-hidden`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <span className={currentEvent.color}>
             {getIcon(currentEvent.type)}
           </span>
-          <span className={`text-xs sm:text-sm font-bold ${currentEvent.color} truncate flex-1`}>
+          <span className={`text-sm font-black ${currentEvent.color} whitespace-nowrap uppercase tracking-wide`}>
             {currentEvent.shortTitle}
           </span>
-          <span className="text-white font-black text-xs font-mono tracking-wider ml-auto">
+          
+          <div className="w-1 h-1 rounded-full bg-white/20 mx-1"></div>
+          
+          <span className="text-white font-bold text-sm font-mono bg-white/10 px-2 py-0.5 rounded-md">
             {formatTime(timeLeft)}
           </span>
           
           <button 
             onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
-            className="ml-2 text-white/50 hover:text-white transition-colors"
+            className="ml-1 p-1 bg-white/5 hover:bg-white/20 rounded-full text-gray-400 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {isExpanded && (
-          <div className="pt-2 mt-1 border-t border-white/10 animate-in slide-in-from-top-2">
+          <div className="mt-2 pt-2 border-t border-white/10 animate-in fade-in slide-in-from-top-1 px-1 pb-1">
             <h4 className={`text-sm font-bold ${currentEvent.color} mb-1`}>{currentEvent.title}</h4>
-            <p className="text-xs text-gray-300 leading-relaxed">
+            <p className="text-xs text-gray-300 leading-relaxed max-w-[300px] whitespace-normal">
               {currentEvent.description}
             </p>
           </div>

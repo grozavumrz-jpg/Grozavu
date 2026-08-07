@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import GlobeComponent from './components/GlobeComponent';
 import UIOverlay from './components/UIOverlay';
 import LeaderboardModal from './components/LeaderboardModal';
 import LandingPage from './components/LandingPage';
 import CountryDetailsModal from './components/CountryDetailsModal';
-import AlienFleet from './components/AlienFleet';
+
 import BottomChatBar from './components/BottomChatBar';
 import FlashEvent from './components/FlashEvent';
 import DailyMissions from './components/DailyMissions';
@@ -44,6 +44,45 @@ function App() {
   const [lastReward, setLastReward] = useState(null);
   const [showUfoPanel, setShowUfoPanel] = useState(false);
   const [showCosmeticsShop, setShowCosmeticsShop] = useState(false);
+  
+  // Retention States
+  const [dailyStreak, setDailyStreak] = useState(0);
+  const [showStreakModal, setShowStreakModal] = useState(false);
+  const [flashEvent, setFlashEvent] = useState(null);
+  const [vendettaTarget, setVendettaTarget] = useState(() => {
+     return localStorage.getItem('hexglobe_vendetta') || null;
+  });
+
+  useEffect(() => {
+     // Streak Logic
+     const lastLoginStr = localStorage.getItem('hexglobe_last_login');
+     const currentStreak = parseInt(localStorage.getItem('hexglobe_streak') || '0', 10);
+     const today = new Date().toDateString();
+     
+     if (lastLoginStr !== today) {
+        if (lastLoginStr) {
+           const lastDate = new Date(lastLoginStr);
+           const diffTime = Math.abs(new Date() - lastDate);
+           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+           
+           if (diffDays === 1 || diffDays === 0) {
+              setDailyStreak(currentStreak + 1);
+              localStorage.setItem('hexglobe_streak', currentStreak + 1);
+           } else {
+              setDailyStreak(1);
+              localStorage.setItem('hexglobe_streak', 1);
+           }
+        } else {
+           setDailyStreak(1);
+           localStorage.setItem('hexglobe_streak', 1);
+        }
+        localStorage.setItem('hexglobe_last_login', today);
+        setTimeout(() => setShowStreakModal(true), 2000); // Show modal after 2s
+     } else {
+        setDailyStreak(currentStreak);
+     }
+  }, []);
+
   const [alliances, setAlliances] = useState(() => {
     const defaultAlliances = [
       { countryA: 'Romania', countryB: 'Moldova', expiresAt: Date.now() + 100000000, name: 'Lupii Daci', crest: '🐺', color: '#bc13fe', creator: 'VladTepes', website: 'www.lupiidaci.ro', logoUrl: 'https://images.unsplash.com/photo-1596726916538-4e1223e71dcb?auto=format&fit=crop&q=80&w=200', hp: 1000, maxHp: 1000 },
@@ -493,6 +532,27 @@ function App() {
     localStorage.setItem('hexglobe_purchasedPixels', JSON.stringify(purchasedPixels));
   }, [purchasedPixels]);
 
+  const emperors = useMemo(() => {
+    const counts = {};
+    purchasedPixels.forEach(p => {
+      if (!p.country) return;
+      if (!counts[p.country]) counts[p.country] = {};
+      counts[p.country][p.name] = (counts[p.country][p.name] || 0) + (p.amount || 1);
+    });
+    const result = {};
+    Object.keys(counts).forEach(country => {
+       const users = Object.keys(counts[country]);
+       if(users.length === 0) return;
+       let topUser = users[0];
+       let max = counts[country][topUser];
+       users.forEach(u => {
+           if(counts[country][u] > max) { max = counts[country][u]; topUser = u; }
+       });
+       result[country] = topUser;
+    });
+    return result;
+  }, [purchasedPixels]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       // 1. Update online time
@@ -522,11 +582,40 @@ function App() {
          // Optional: Fire a local event or console log to indicate passive income
          console.log(`Passive Income: +${pixelsGained} Px from Central Banks`);
       }
+
+      // 3. Flash Events Logic (Random trigger, e.g., 5% chance every minute if none active)
+      if (Math.random() < 0.05 && !localStorage.getItem('hexglobe_active_flash')) {
+         const countriesList = ['Romania', 'Moldova', 'Ukraine', 'Hungary', 'Bulgaria'];
+         const target = countriesList[Math.floor(Math.random() * countriesList.length)];
+         setFlashEvent({
+            country: target,
+            endTime: Date.now() + 5 * 60 * 1000, // 5 minutes
+            pixelsDrop: 50
+         });
+         localStorage.setItem('hexglobe_active_flash', 'true');
+      }
+
     }, 60000); // Check every minute
     return () => clearInterval(timer);
   }, [countryBankFunds, purchasedPixels]);
 
   const handlePurchase = (purchaseData) => {
+    // Check Vendetta
+    if (vendettaTarget && vendettaTarget === selectedCountry.ADMIN) {
+       alert("🚨 VENDETTA COMPLETATĂ! 🚨\nTe-ai răzbunat pe " + vendettaTarget + "!\nAi primit XP DUBLU (100 Pixeli Bonus).");
+       updateUserBalance(100);
+       setVendettaTarget(null);
+       localStorage.removeItem('hexglobe_vendetta');
+    }
+
+    // Check Flash Event
+    if (flashEvent && flashEvent.country === selectedCountry.ADMIN && Date.now() < flashEvent.endTime) {
+       alert(`🔥 FLASH EVENT! Ai prins airdrop-ul din ${flashEvent.country}!\nAi primit ${flashEvent.pixelsDrop} Pixeli extra.`);
+       updateUserBalance(flashEvent.pixelsDrop);
+       setFlashEvent(null);
+       localStorage.removeItem('hexglobe_active_flash');
+    }
+
     // Add new pixel to state
     setPurchasedPixels([...purchasedPixels, {
       lat: selectedCountry.clickLat,
@@ -634,6 +723,17 @@ function App() {
     }
 
     setActiveAttacks(prev => [...prev, { source: c1, target: c2, id: Date.now() }]);
+    
+    // Set Vendetta if user's country is attacked
+    const currentUser = localStorage.getItem('hexglobe_username') || 'Anonim';
+    const userHasPixelInTarget = purchasedPixels.some(p => p.name === currentUser && p.country === c2);
+    if (userHasPixelInTarget) {
+       setVendettaTarget(c1);
+       localStorage.setItem('hexglobe_vendetta', c1);
+       // Alert the user they have been attacked
+       alert(`🚨 ALARMĂ! ${c1} a atacat țara ta (${c2})!\nAi primit o VENDETTA. Răzbună-te cucerind pixeli în ${c1} pentru XP dublu!`);
+    }
+
     setTimeout(() => {
       setActiveAttacks(prev => prev.slice(1));
     }, 4000);
@@ -687,10 +787,11 @@ function App() {
         
         alliances={alliances}
         onAttackBoss={handleUfoAttack}
+        emperors={emperors}
       />
       </div>
       
-      {hasStarted && <AlienFleet />}
+
 
       {hasStarted && (
         <div className={selectedCountry ? "hidden md:block" : "block"}>
@@ -700,13 +801,83 @@ function App() {
             activeBoosts={activeBoosts}
             userName={playerName}
             userPixelsCount={userBalance}
+            dailyStreak={dailyStreak}
             onOpenPrivateChat={handleOpenPrivateChat}
             purchasedPixels={purchasedPixels}
           />
         </div>
       )}
 
-      {hasStarted && <FlashEvent />}
+      {/* FLASH EVENT BANNER */}
+      {hasStarted && flashEvent && Date.now() < flashEvent.endTime && (
+        <div 
+          onClick={() => {
+             setSelectedCountry({ ADMIN: flashEvent.country });
+             setFlashEvent(null);
+          }}
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 cursor-pointer animate-in slide-in-from-top-10"
+        >
+           <div className="bg-red-600/90 backdrop-blur-md text-white px-6 py-3 rounded-2xl border-2 border-yellow-400 shadow-[0_0_30px_rgba(255,0,0,0.8)] flex flex-col items-center justify-center animate-pulse">
+              <span className="text-xl font-black uppercase tracking-widest text-yellow-300 drop-shadow-md">
+                 🔥 AIRDROP ÎN {flashEvent.country}! 🔥
+              </span>
+              <span className="text-sm font-bold mt-1 text-white">
+                 Cumpără pixeli AICI acum pentru +{flashEvent.pixelsDrop} Bonus!
+              </span>
+           </div>
+        </div>
+      )}
+
+      {/* VENDETTA BANNER */}
+      {hasStarted && vendettaTarget && (
+        <div 
+          onClick={() => setSelectedCountry({ ADMIN: vendettaTarget })}
+          className="fixed top-24 left-1/2 -translate-x-1/2 z-50 cursor-pointer animate-in slide-in-from-top-5"
+        >
+           <div className="bg-black/80 backdrop-blur-md text-red-500 px-6 py-2 rounded-xl border border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center gap-3 hover:bg-red-950 transition-colors">
+              <span className="text-2xl">🚨</span>
+              <div className="flex flex-col">
+                 <span className="text-sm font-black uppercase tracking-widest text-red-500">VENDETTA ACTIVĂ</span>
+                 <span className="text-xs font-bold text-gray-300">Răzbună-te cucerind pixeli în {vendettaTarget} (XP DUBLU)!</span>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* DAILY STREAK CLAIM MODAL */}
+      {showStreakModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in zoom-in">
+          <div className="bg-gradient-to-b from-orange-600 to-red-800 p-1 rounded-2xl w-full max-w-sm shadow-[0_0_50px_rgba(239,68,68,0.5)]">
+            <div className="bg-black/90 p-6 rounded-xl flex flex-col items-center text-center relative overflow-hidden">
+              <div className="text-6xl mb-4 relative z-10 drop-shadow-[0_0_15px_rgba(251,146,60,1)]">🔥</div>
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 mb-2 uppercase tracking-wider relative z-10">
+                Bonus Zilnic
+              </h2>
+              <p className="text-gray-300 mb-6 font-medium relative z-10">
+                Ești activ de <span className="text-orange-400 font-bold text-lg">{dailyStreak} zile</span> la rând!
+              </p>
+              
+              <div className="bg-white/5 border border-white/10 p-4 rounded-xl w-full mb-6 relative z-10 flex flex-col items-center">
+                 <span className="text-sm text-gray-400 uppercase tracking-widest mb-1">Recompensă</span>
+                 <span className="text-3xl font-black text-neonCyan drop-shadow-[0_0_10px_#00f3ff]">+5 Pixeli</span>
+                 {dailyStreak >= 7 && (
+                   <span className="text-sm text-purple-400 mt-2 font-bold animate-pulse">Insignă "Lup Singuratic" deblocată!</span>
+                 )}
+              </div>
+
+              <button 
+                onClick={() => {
+                  updateUserBalance(5);
+                  setShowStreakModal(false);
+                }}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] uppercase tracking-widest relative z-10"
+              >
+                Revendică Recompensa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {hasStarted && activeAttacks.length > 0 && activeAttacks[activeAttacks.length - 1].source && (
         <AttackAlert attack={activeAttacks[activeAttacks.length - 1]} />

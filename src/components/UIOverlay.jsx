@@ -38,6 +38,7 @@ export default function UIOverlay({
   const [name, setName] = useState('');
   const [instagram, setInstagram] = useState('');
   const [website, setWebsite] = useState('');
+  const [tiktok, setTiktok] = useState('');
   const [bio, setBio] = useState('');
   const [showSocialInputs, setShowSocialInputs] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,6 +47,7 @@ export default function UIOverlay({
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [showAllCountries, setShowAllCountries] = useState(false);
   const [attackTarget, setAttackTarget] = useState('');
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const audioRef = React.useRef(null);
   
   useEffect(() => {
@@ -156,8 +158,9 @@ export default function UIOverlay({
       if (website) {
         localStorage.setItem('hexglobe_website', website);
       }
-      onPurchase({ name, instagram, website, bio });
+      onPurchase({ name, instagram, website, tiktok, bio });
       setIsProcessing(false);
+      setIsPurchasing(false);
       setName('');
       setInstagram('');
       setWebsite('');
@@ -407,8 +410,8 @@ export default function UIOverlay({
                     <MapPin className="text-neonCyan w-6 h-6" />
                     {selectedCountry.ADMIN}
                   </h3>
-                  <div className="text-xs font-mono text-gray-400 mt-1">
-                    {countryPixels} / 5000 Pixeli Ocupați
+                  <div className="text-xs font-bold uppercase tracking-wide text-neonCyan mt-1 flex items-center gap-2">
+                    {/* Placeholder or empty for now, as user wanted it moved */}
                   </div>
                 </div>
                 <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -650,87 +653,129 @@ export default function UIOverlay({
               ) : null}
             </div>
 
-            {/* Purchase Form (Fixed Bottom) */}
+            {/* Purchase Form / Button (Fixed Bottom) */}
             <div className="p-4 md:p-6 shrink-0 border-t border-white/10 bg-black/60 backdrop-blur-md">
-              <div className="bg-black/40 rounded-lg p-2 md:p-3 mb-3 border border-white/5 space-y-2 max-h-[35vh] md:max-h-none overflow-y-auto custom-scrollbar">
-                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
-                  <User className="text-gray-400 w-4 h-4" />
-                  <input 
-                    type="text" 
-                    placeholder="Numele tău" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
-                  />
-                </div>
-                
-                {!showSocialInputs ? (
-                  <button 
-                    onClick={() => setShowSocialInputs(true)}
-                    className="w-full text-left py-1 px-2 text-[10px] text-gray-400 hover:text-white transition-colors flex items-center gap-1"
-                  >
-                    <span>+ Adaugă profil social (Opțional)</span>
-                  </button>
-                ) : (
-                  <div className="space-y-2 animate-in slide-in-from-top-2">
-                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonPurple transition-colors">
-                      <AtSign className="text-gray-400 w-4 h-4" />
-                      <input 
-                        type="text" 
-                        placeholder="Instagram (Opțional)" 
-                        value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
-                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
-                      <Link className="text-gray-400 w-4 h-4" />
-                      <input 
-                        type="text" 
-                        placeholder="Website / TikTok (Opțional)" 
-                        value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
-                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs"
-                      />
-                    </div>
-                    <div className="flex items-start gap-3 bg-white/5 p-2 rounded-md border border-white/10 focus-within:border-neonCyan transition-colors">
-                      <textarea 
-                        placeholder="Câteva cuvinte despre tine / mesaj (Opțional)" 
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        rows={2}
-                        maxLength={100}
-                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-xs resize-none"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-between items-center mb-4 px-2">
-                  <span className="text-gray-400 text-xs">Cost Pixel:</span>
-                  <span className="text-white text-sm font-bold font-mono">$1.00 USD</span>
-              </div>
               
-              {/* FOMO Attackers Counter */}
-              <div className="bg-neonCyan/10 border border-neonCyan/30 rounded-lg p-2 mb-4 flex items-center justify-center gap-2 animate-pulse">
-                <span className="text-neonCyan text-sm">👤</span>
-                <span className="text-neonCyan/80 text-xs font-bold uppercase tracking-wide">
-                  <span className="text-white font-black">{Math.floor(Date.now() / 150000 % 15) + 3 + (countryPixels > 50 ? 25 : 0)}</span> utilizatori online în țara ta
-                </span>
-              </div>
+              {!isPurchasing ? (
+                 <button 
+                   onClick={() => setIsPurchasing(true)}
+                   className={`w-full font-bold py-3 rounded-xl text-sm transition-all uppercase tracking-widest flex justify-center items-center ${
+                     countryPixels >= 100 
+                     ? 'bg-red-500/20 hover:bg-red-500/40 border border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]'
+                     : 'bg-neonCyan/20 hover:bg-neonCyan/40 border border-neonCyan text-neonCyan shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.6)]'
+                   }`}
+                 >
+                   {countryPixels >= 100 ? '🔥 APĂRĂ ȚARA / CUMPĂRĂ PIXEL' : 'Cumpără Pixel ($1 USD)'}
+                 </button>
+              ) : (
+                <div className="animate-in slide-in-from-bottom-5">
+                  <div className="flex justify-between items-center hidden">
+                     <h4 className="text-neonCyan font-bold uppercase text-xs tracking-widest flex items-center gap-2">
+                        <User className="w-4 h-4" /> Datele Tale
+                     </h4>
+                     <button onClick={() => setIsPurchasing(false)} className="text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-1 rounded-md">
+                        <X className="w-4 h-4" />
+                     </button>
+                  </div>
+                  
+                  <div className="bg-black/20 rounded-xl p-3 mb-3 border border-white/5 flex flex-col gap-3 max-h-[40vh] md:max-h-none overflow-y-auto custom-scrollbar relative">
+                    <button 
+                      onClick={() => setIsPurchasing(false)} 
+                      className="absolute top-2 right-2 text-gray-500 hover:text-white text-xs bg-black/60 rounded-full w-6 h-6 flex items-center justify-center z-10 transition-colors"
+                      title="Închide formularul"
+                    >
+                      ✕
+                    </button>
 
-              <button 
-                onClick={handleBuy}
-                disabled={isProcessing}
-                className={`w-full font-bold py-3 rounded-xl text-sm transition-all uppercase tracking-widest flex justify-center items-center ${
-                  countryPixels >= 100 
-                  ? 'bg-red-500/20 hover:bg-red-500/40 border border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]'
-                  : 'bg-neonCyan/20 hover:bg-neonCyan/40 border border-neonCyan text-neonCyan shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.6)]'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {isProcessing ? 'Se procesează...' : (countryPixels >= 100 ? '🔥 APĂRĂ ȚARA / CUMPĂRĂ PIXEL' : 'Cumpără Pixel')}
-              </button>
+                    <div className="flex items-center gap-3 bg-black/40 p-3 rounded-lg border border-white/5 focus-within:border-white/20 transition-colors">
+                      <User className="text-gray-400 w-4 h-4" />
+                      <input 
+                        type="text" 
+                        placeholder="Numele tău" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-sm font-medium"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Social Media</span>
+                      <button 
+                        onClick={() => setShowSocialInputs(!showSocialInputs)}
+                        className="text-xs bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded transition-colors"
+                      >
+                        {showSocialInputs ? 'Ascunde' : 'Adaugă (Opțional)'}
+                      </button>
+                    </div>
+
+                    {showSocialInputs && (
+                      <div className="animate-in fade-in slide-in-from-top-2 flex flex-col gap-3">
+                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded-lg border border-white/5 focus-within:border-white/20 transition-colors">
+                          <AtSign className="text-gray-400 w-4 h-4" />
+                          <input 
+                            type="text" 
+                            placeholder="Instagram (Opțional)" 
+                            value={instagram}
+                            onChange={(e) => setInstagram(e.target.value)}
+                            className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-sm font-medium"
+                          />
+                        </div>
+                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded-lg border border-white/5 focus-within:border-white/20 transition-colors">
+                          <Link className="text-gray-400 w-4 h-4" />
+                          <input 
+                            type="text" 
+                            placeholder="Website (Opțional)" 
+                            value={website}
+                            onChange={(e) => setWebsite(e.target.value)}
+                            className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-sm font-medium"
+                          />
+                        </div>
+                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded-lg border border-white/5 focus-within:border-white/20 transition-colors">
+                          <span className="text-gray-400 font-bold text-xs w-4 text-center">🎵</span>
+                          <input 
+                            type="text" 
+                            placeholder="TikTok (Opțional)" 
+                            value={tiktok}
+                            onChange={(e) => setTiktok(e.target.value)}
+                            className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-sm font-medium"
+                          />
+                        </div>
+                        <div className="flex items-start gap-3 bg-black/40 p-3 rounded-lg border border-white/5 focus-within:border-white/20 transition-colors">
+                          <textarea 
+                            placeholder="Câteva cuvinte despre tine / mesaj (Opțional)" 
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            rows={2}
+                            maxLength={100}
+                            className="bg-transparent border-none outline-none text-white w-full placeholder-gray-500 text-sm font-medium resize-none mt-0.5"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between items-center mb-3 px-2">
+                      <span className="text-gray-400 text-sm">Cost Pixel:</span>
+                      <span className="text-white text-sm font-bold font-mono">$1.00 USD</span>
+                  </div>
+
+                  <div className="w-full bg-[#0a1a1f] border border-[#0d3b44] text-[#00f3ff] rounded-xl py-3 mb-3 flex items-center justify-center gap-2 font-bold text-xs tracking-wider shadow-[0_0_15px_rgba(0,243,255,0.1)]">
+                    <User className="w-4 h-4 text-purple-400" /> 
+                    <span className="text-white font-black">{Math.floor(Date.now() / 150000 % 15) + 3 + (countryPixels > 50 ? 25 : 0)}</span> UTILIZATORI ONLINE ÎN ȚARA TA
+                  </div>
+                  
+                  <button 
+                    onClick={handleBuy}
+                    disabled={isProcessing}
+                    className={`w-full font-bold py-3 rounded-xl text-sm transition-all uppercase tracking-widest flex justify-center items-center ${
+                      countryPixels >= 100 
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                      : 'bg-neonCyan hover:bg-neonCyan/80 text-black shadow-[0_0_15px_rgba(0,243,255,0.3)]'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isProcessing ? 'Se procesează...' : (countryPixels >= 100 ? '✅ CONFIRMĂ ACHIZIȚIA' : '✅ CONFIRMĂ ACHIZIȚIA')}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : selectedPixel ? (

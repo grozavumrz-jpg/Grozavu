@@ -41,6 +41,7 @@ export default function BottomChatBar({
   activeBoosts = [],
   userName = 'Eu',
   userPixelsCount = 0,
+  dailyStreak = 0,
   onOpenPrivateChat,
   purchasedPixels = [],
 }) {
@@ -120,17 +121,6 @@ export default function BottomChatBar({
 
     const msgText = inputText.trim();
     setInputText('');
-
-    const tempId = Date.now().toString();
-    setMessages(prev => [...prev, {
-      id: tempId,
-      user: userName,
-      text: msgText,
-      timestamp: new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }),
-      isLocal: true,
-      pixels: userPixelsCount,
-      isDictator: activeBoosts.includes('boost_dictator'),
-    }].slice(-60));
 
     await supabase.from('messages').insert([{
       sender_email: userName,
@@ -288,6 +278,13 @@ export default function BottomChatBar({
           onSubmit={handleSend}
           className="flex items-center gap-2 px-3 py-2 border-t border-white/[0.06] shrink-0"
         >
+          {dailyStreak > 0 && (
+            <div className="flex items-center gap-1 bg-orange-500/20 px-2 py-1 rounded-md border border-orange-500/30" title={`Streak: ${dailyStreak} zile`}>
+               <span className="text-orange-500 animate-pulse text-xs">🔥</span>
+               <span className="text-orange-400 text-[10px] font-bold">{dailyStreak}</span>
+            </div>
+          )}
+
           <input
             type="text"
             value={inputText}
