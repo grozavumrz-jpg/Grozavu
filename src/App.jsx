@@ -16,6 +16,7 @@ import CosmeticsShop from './components/CosmeticsShop';
 import PrivateChat from './components/PrivateChat';
 import AllianceDetailsModal from './components/AllianceDetailsModal';
 import UserProfileModal from './components/UserProfileModal';
+import { supabase } from './supabaseClient';
 function App() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedPixel, setSelectedPixel] = useState(null);
@@ -58,6 +59,46 @@ function App() {
     const saved = localStorage.getItem('hexglobe_inventory');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Supabase Auth and Profile Sync
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) handleUserLogin(session.user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (_event === 'SIGNED_IN' && session) {
+        handleUserLogin(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleUserLogin = async (user) => {
+    // Check if profile exists
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (error && error.code === 'PGRST116') {
+      // Profile doesn't exist, create it with welcome bonus
+      const { data: newProfile, error: insertError } = await supabase.from('profiles').insert([
+        { id: user.id, email: user.email, balance: 10, badges: ['welcome_badge'] }
+      ]).select().single();
+      
+      if (!insertError && newProfile) {
+        setUserBalance(newProfile.balance);
+        const savedMedals = JSON.parse(localStorage.getItem('hexglobe_special_medals') || '[]');
+        if (!savedMedals.includes('welcome_badge')) {
+           localStorage.setItem('hexglobe_special_medals', JSON.stringify([...savedMedals, 'welcome_badge']));
+        }
+      }
+    } else if (data) {
+       // Profile exists, load balance
+       setUserBalance(data.balance);
+       const savedMedals = JSON.parse(localStorage.getItem('hexglobe_special_medals') || '[]');
+       const newMedals = Array.from(new Set([...savedMedals, ...(data.badges || [])]));
+       localStorage.setItem('hexglobe_special_medals', JSON.stringify(newMedals));
+    }
+  };
   
   const [equippedCosmetics, setEquippedCosmetics] = useState(() => {
     const saved = localStorage.getItem('hexglobe_equipped');
@@ -85,6 +126,12 @@ function App() {
   const updateUserBalance = (amount) => {
     setUserBalance(prev => {
       const newBal = prev + amount;
+      // Update Supabase in background
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          supabase.from('profiles').update({ balance: newBal }).eq('id', user.id).then();
+        }
+      });
       return newBal;
     });
   };

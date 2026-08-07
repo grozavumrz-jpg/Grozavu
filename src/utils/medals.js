@@ -1,5 +1,12 @@
 export const MEDALS = [
   {
+    id: 'welcome_badge',
+    name: 'Bun Venit',
+    icon: '👋',
+    description: 'Ai devenit cetățean HexGlobe.',
+    condition: (pixels, conquered, special = []) => special.includes('welcome_badge')
+  },
+  {
     id: 'first_buy',
     name: 'Prima Achiziție',
     icon: '🎖️',
