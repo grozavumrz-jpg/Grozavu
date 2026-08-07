@@ -250,16 +250,16 @@ export default function CountryLogo({ countryName, purchasedPixels, userName, on
         const rarestBadge = badges[badges.length - 1];
 
         return (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto" onClick={() => setSelectedLogo(null)}>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 pointer-events-auto" onClick={() => setSelectedLogo(null)}>
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-            <div
-              className="relative w-full max-w-lg glass-panel rounded-3xl border border-white/10 shadow-[0_0_60px_rgba(0,243,255,0.15)] overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="h-1.5 w-full" style={{ background: gradient }} />
-              
-              <div className="p-8">
-                <button onClick={() => setSelectedLogo(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 bg-white/5 rounded-full transition-colors hover:bg-white/10">
+              <div
+                className="relative w-full max-w-lg glass-panel rounded-3xl border border-white/10 shadow-[0_0_60px_rgba(0,243,255,0.15)] overflow-hidden flex flex-col max-h-[90vh]"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="h-1.5 w-full shrink-0" style={{ background: gradient }} />
+                
+                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1">
+                  <button onClick={() => setSelectedLogo(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 bg-white/5 rounded-full transition-colors hover:bg-white/10 z-50">
                   <X size={20} />
                 </button>
 
@@ -326,13 +326,13 @@ export default function CountryLogo({ countryName, purchasedPixels, userName, on
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-3 mb-8">
-                  {player.instagram && (
-                    <a href={`https://instagram.com/${player.instagram.replace('@','')}`} target="_blank" rel="noreferrer"
-                      className="flex items-center justify-center gap-2 bg-pink-500/10 border border-pink-500/30 rounded-xl p-3 hover:bg-pink-500/20 transition-all hover:scale-105">
-                      <span className="text-pink-400 text-sm font-bold">📸 @{player.instagram.replace('@','')}</span>
-                    </a>
-                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                    {player.instagram && (
+                      <a href={`https://instagram.com/${player.instagram.replace('@','')}`} target="_blank" rel="noreferrer"
+                        className="flex items-center justify-center gap-2 bg-pink-500/10 border border-pink-500/30 rounded-xl p-3 hover:bg-pink-500/20 transition-all hover:scale-105 overflow-hidden">
+                        <span className="text-pink-400 text-sm font-bold truncate">📷 @{player.instagram.replace('@','')}</span>
+                      </a>
+                    )}
                   {player.website && (
                     <a href={player.website.startsWith('http') ? player.website : `https://${player.website}`} target="_blank" rel="noreferrer"
                       className="flex items-center justify-center gap-2 bg-neonCyan/10 border border-neonCyan/30 rounded-xl p-3 hover:bg-neonCyan/20 transition-all hover:scale-105">

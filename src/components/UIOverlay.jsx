@@ -398,7 +398,7 @@ export default function UIOverlay({
             </div>
           </div>
         ) : selectedCountry ? (
-          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 max-h-[85vh] md:max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-neonCyan border transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50">
+          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 h-[85vh] md:h-auto md:max-h-[calc(100vh-120px)] flex-col rounded-t-3xl md:rounded-2xl pointer-events-auto border-t md:border border-neonCyan transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] md:shadow-none">
             <div className="p-6 pb-4 border-b border-white/10 shrink-0">
               <div className="flex justify-between items-start mb-4">
                 <div>
