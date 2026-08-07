@@ -191,6 +191,11 @@ export default function CountryLogo({ countryName, purchasedPixels, userName, on
               key={i}
               className="relative group cursor-pointer"
               onClick={() => setSelectedLogo({ player, logoData: getLogo(player.name) })}
+              onTouchEnd={(e) => {
+                // Prevent default so simulated clicks don't double-fire
+                e.preventDefault();
+                setSelectedLogo({ player, logoData: getLogo(player.name) });
+              }}
               title={player.name}
             >
               <div

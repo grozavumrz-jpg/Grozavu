@@ -19,8 +19,12 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
       // Slowly rotate the globe for a cinematic effect
       if (globeEl.current) {
-        globeEl.current.controls().autoRotate = true;
-        globeEl.current.controls().autoRotateSpeed = 0.2; // Very slow and smooth
+        const controls = globeEl.current.controls();
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.2; // Very slow and smooth
+        // Prevent zooming too close (clipping) on mobile
+        controls.minDistance = 120;
+        controls.maxDistance = 600;
         globeEl.current.pointOfView({ altitude: 2.5 });
         
         // Add realistic background planets only once
@@ -868,8 +872,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
           return el;
         }}
         htmlAltitude={d => {
-          if (d.type === 'logo') return 0.005;
-          if (d.type === 'alliance-crest') return 0.015; // Low on the surface
+          if (d.type === 'logo') return 0.01;
+          if (d.type === 'alliance-crest') return 0.02; // Low on the surface
           return 0.12;
         }}
 
