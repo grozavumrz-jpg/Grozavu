@@ -81,12 +81,12 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       'Norway': 'no',
       'Somaliland': 'so',
       'Kosovo': 'xk'
-    };
+
     if (overrides[name]) return overrides[name];
     const feature = countries.features?.find(f => f.properties.ADMIN === name);
     const iso = feature ? feature.properties.ISO_A2?.toLowerCase() : null;
     return (iso && iso !== '-99') ? iso : null;
-  };
+
 
   // Calculate html tooltips and live counters
   const htmlElements = useMemo(() => {
@@ -119,7 +119,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         if (p[1] > maxLat) maxLat = p[1];
       });
       return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-    };
+
 
     purchasedPixels.forEach(p => {
       if (!countryStats[p.country]) {
@@ -222,10 +222,10 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       const ufoBar = e.target.closest('.ufo-hp-bar');
       if (ufoBar && worldBoss && worldBoss.active) {
          e.preventDefault();
-         e.stopPropagation();
+
          if (onUfoClick) onUfoClick();
       }
-    };
+
     window.addEventListener('pointerdown', handleGlobalClick, { capture: true });
     window.addEventListener('click', handleGlobalClick, { capture: true });
     window.addEventListener('dblclick', handleGlobalClick, { capture: true });
@@ -233,7 +233,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       window.removeEventListener('pointerdown', handleGlobalClick, { capture: true });
       window.removeEventListener('click', handleGlobalClick, { capture: true });
       window.removeEventListener('dblclick', handleGlobalClick, { capture: true });
-    };
+
   }, [worldBoss, onUfoClick]);
 
   // High Performance Visual Reactivity (Pulsing Territories)
@@ -257,7 +257,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         }
       });
       frameId = requestAnimationFrame(animate);
-    };
+
     animate();
     return () => cancelAnimationFrame(frameId);
   }, [activeAttacks]);
@@ -300,7 +300,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
          let sumLng = 0, sumLat = 0;
          pts.forEach(p => { sumLng += p[0]; sumLat += p[1]; });
          return { lat: sumLat / pts.length, lng: sumLng / pts.length };
-       };
+
 
        if (targetPixels.length > 0) {
          targetP = targetPixels[Math.floor(Math.random() * targetPixels.length)];
@@ -417,7 +417,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     parent.__innerGroup = group;
 
     return parent;
-  };
+
 
   // Cinematic Solar System Logic (Real-time UTC Day/Night Sync)
   useEffect(() => {
@@ -467,7 +467,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
       cleanupLights = () => {
         scene.remove(ambientLight, sunLight, sunMesh);
-      };
+
 
       // Real-Time Position Loop for UTC Day/Night
       const updatePositions = () => {
@@ -491,7 +491,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         sunMesh.position.set(sunPos.x, sunPos.y, sunPos.z);
         
         animationFrameId = requestAnimationFrame(updatePositions);
-      };
+
 
       updatePositions();
     }, 100);
@@ -499,7 +499,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       cleanupLights();
-    };
+
   }, []);
 
   // Watch for selectedCountry prop changes to fly the camera
@@ -741,7 +741,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             } catch(e) {}
             
             el.innerHTML = `
-              <div style="pointer-events: all; cursor: pointer; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; animation: floatCrest 4s ease-in-out infinite;">
+              <div style="pointer-events: none; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; animation: floatCrest 4s ease-in-out infinite;">
                  <style>
                     @keyframes floatCrest {
                        0%, 100% { transform: translate(-50%, -50%) translateY(0); }
@@ -765,16 +765,14 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               </div>
             `;
-            el.style.pointerEvents = 'none'; // Allow scroll through empty space
             el.onclick = (e) => {
-               e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
-               }));
-            };
+
+
           } else if (d.type === 'ufo-hp') {
               el.innerHTML = `
-                <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: all; background: linear-gradient(135deg, rgba(20,0,0,0.95), rgba(50,0,0,0.85)); border: 1px solid rgba(255,0,68,0.5); border-top: 3px solid #ff0044; box-shadow: 0 10px 30px -5px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2); padding: 12px 20px; border-radius: 6px; color: white; font-family: 'Inter', sans-serif; white-space: nowrap; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
+                <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: none; background: linear-gradient(135deg, rgba(20,0,0,0.95), rgba(50,0,0,0.85)); border: 1px solid rgba(255,0,68,0.5); border-top: 3px solid #ff0044; box-shadow: 0 10px 30px -5px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2); padding: 12px 20px; border-radius: 6px; color: white; font-family: 'Inter', sans-serif; white-space: nowrap; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
                   <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; pointer-events: none;">
                      <span style="display: inline-block; width: 8px; height: 8px; background: #ff0044; border-radius: 50%; box-shadow: 0 0 10px #ff0044; animation: pulse 1s infinite;"></span>
                      <span style="color: #fff; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,0,0,0.8);">TARGET LOCK: ${d.country.toUpperCase()}</span>
@@ -837,7 +835,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
             if (logoUrl) {
               el.innerHTML = `
-                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; overflow: visible; ${finalShadow} transform: translate(-50%, -50%); cursor: pointer; pointer-events: all; position: relative; background: black; transition: all 0.2s; ${extraStyles}" onmouseenter="this.style.transform='translate(-50%, -50%) scale(1.2)'" onmouseleave="this.style.transform='translate(-50%, -50%) scale(1)'" onpointerover="event.stopPropagation()" onpointermove="event.stopPropagation()">
+                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; overflow: visible; ${finalShadow} transform: translate(-50%, -50%); pointer-events: none; position: relative; background: black; transition: all 0.2s; ${extraStyles}">
                     <img src="${logoUrl}" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; border-radius: 4px;" />
                     ${iconHtml}
                     ${!isComplete ? `<div style="position: absolute; bottom: 0; left: 0; height: 2px; background: #00f3ff; width: ${progress}%; pointer-events: none;"></div>` : ''}
@@ -852,7 +850,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               const grad = `linear-gradient(135deg, hsl(${h1}, 80%, 55%), hsl(${h2}, 80%, 55%))`;
               
               el.innerHTML = `
-                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; ${finalShadow} background: ${grad}; display: flex; align-items: center; justify-content: center; color: white; font-family: Inter, sans-serif; font-size: ${size/2.5}px; font-weight: 900; transform: translate(-50%, -50%); cursor: pointer; pointer-events: all; position: relative; overflow: visible; transition: all 0.2s; ${extraStyles}" onmouseenter="this.style.transform='translate(-50%, -50%) scale(1.2)'" onmouseleave="this.style.transform='translate(-50%, -50%) scale(1)'" onpointerover="event.stopPropagation()" onpointermove="event.stopPropagation()">
+                 <div title="${d.name}" style="width: ${size}px; height: ${size}px; border: 2px solid ${finalBorderCol}; border-radius: 6px; ${finalShadow} background: ${grad}; display: flex; align-items: center; justify-content: center; color: white; font-family: Inter, sans-serif; font-size: ${size/2.5}px; font-weight: 900; transform: translate(-50%, -50%); pointer-events: none; position: relative; overflow: visible; transition: all 0.2s; ${extraStyles}">
                     <span style="pointer-events: none;">${getInitials(d.name)}</span>
                     ${iconHtml}
                     ${!isComplete && logoUrl === null ? `<div style="position: absolute; bottom: 0; left: 0; height: 2px; background: #00f3ff; width: ${progress}%; pointer-events: none;"></div>` : ''}
@@ -860,14 +858,11 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               `;
             }
             
-            // Explicitly bind DOM event to bypass inline string sanitization or scoping issues
-            el.style.pointerEvents = 'none'; // Allow scroll through empty space, inner div has pointer-events: all
-            el.onclick = (e) => {
-               e.stopPropagation();
-               window.dispatchEvent(new CustomEvent('mapPixelClick', {
-                  detail: { name: d.name, country: d.country, lat: d.lat, lng: d.lng }
-               }));
-            };
+
+
+
+
+
           }
           return el;
         }}
