@@ -13,24 +13,32 @@ export default function LuckyWheel({ isOpen, onClose, onReward, userBalance, onU
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [winner, setWinner] = useState(null);
+  const [isFirstSpin, setIsFirstSpin] = useState(true);
   const wheelRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) {
       setWinner(null);
+      setRotation(0);
+    } else {
+      setIsFirstSpin(true); // Reset to free spin when opened
     }
   }, [isOpen]);
 
   const spinWheel = () => {
     if (isSpinning) return;
     
-    if (userBalance < 10) {
-      alert("Fonduri insuficiente! Ai nevoie de 10 Pixeli pentru o rotire.");
+    if (!isFirstSpin && userBalance < 5) {
+      alert("Fonduri insuficiente! Ai nevoie de 5 Pixeli pentru o rotire.");
       return;
     }
     
-    // Deduct 10 pixels
-    if(onUpdateBalance) onUpdateBalance(-10);
+    // Deduct 5 pixels if not first spin
+    if (!isFirstSpin) {
+      if(onUpdateBalance) onUpdateBalance(-5);
+    } else {
+      setIsFirstSpin(false); // consume free spin
+    }
 
     setIsSpinning(true);
     setWinner(null);
@@ -84,7 +92,7 @@ export default function LuckyWheel({ isOpen, onClose, onReward, userBalance, onU
            RULETA NOROCULUI
         </h2>
         <p className="text-gray-400 text-sm mb-8 text-center max-w-xs z-10 relative bg-black/50 p-2 rounded-lg border border-white/5">
-          Costă 10 Pixeli rotirea. Câștigă premii unice, titlul de Dictator sau legendarul Pixel de Aur!
+          {isFirstSpin ? "Prima rotire este GRATUITĂ! Câștigă premii unice." : "Costă 5 Pixeli rotirea. Poți continua să câștigi premii unice!"}
         </p>
 
         <div className="relative w-64 h-64 mb-8">
@@ -137,10 +145,10 @@ export default function LuckyWheel({ isOpen, onClose, onReward, userBalance, onU
         ) : (
           <button 
             onClick={spinWheel}
-            disabled={isSpinning || userBalance < 10}
+            disabled={isSpinning || (!isFirstSpin && userBalance < 5)}
             className="w-full py-4 bg-white text-black font-black rounded-xl hover:bg-neonCyan transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(0,243,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center justify-center gap-2"
           >
-            ROTEȘTE (10 💎)
+            {isFirstSpin ? 'ROTEȘTE GRATUIT 🎁' : 'ROTEȘTE (5 💎)'}
           </button>
         )}
       </div>
