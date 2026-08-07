@@ -265,7 +265,7 @@ function App() {
   }, []);
 
   // World Boss State
-  const [worldBoss, setWorldBoss] = useState(() => {
+  const [worldBoss, setWorldBoss] = useState(() => { return null;
     try {
       const saved = localStorage.getItem('hexglobe_worldBoss');
       if (saved) return JSON.parse(saved);
@@ -614,7 +614,7 @@ function App() {
         purchasedPixels={purchasedPixels} 
         activeAttacks={activeAttacks}
         conqueredCountries={conqueredCountries}
-        worldBoss={worldBoss}
+        
         alliances={alliances}
         onAttackBoss={handleUfoAttack}
       />
@@ -702,7 +702,7 @@ function App() {
           <UfoPanel 
             isOpen={showUfoPanel} 
             onClose={() => setShowUfoPanel(false)} 
-            worldBoss={worldBoss} 
+             
             onAttack={handleUfoAttack} 
           />
         </>
