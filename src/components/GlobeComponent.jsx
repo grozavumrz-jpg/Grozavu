@@ -33,7 +33,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.2; // Very slow and smooth
         // Prevent zooming too close (clipping) on mobile
-        controls.minDistance = 120;
+        // Allow zooming extremely close to see the individual crystals
+        controls.minDistance = 105;
         controls.maxDistance = 600;
         globeEl.current.pointOfView({ altitude: 2.5 });
         
@@ -133,12 +134,35 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
     purchasedPixels.forEach(p => {
       const key = `${p.country}_${p.name}`;
       if (!groups[key]) {
-        groups[key] = { ...p, totalPixels: 0, isGroupedPlayer: true };
+         const centroid = getCentroid(p.country);
+         if (!centroid) return;
+         
+         // Deterministic hash based on username to offset their crystal slightly from centroid
+         let hash = 0;
+         for (let i = 0; i < p.name.length; i++) {
+            hash = Math.imul(31, hash) + p.name.charCodeAt(i) | 0;
+         }
+         const rng = () => {
+            hash = Math.imul(741103597, hash) + 1 | 0;
+            return (hash >>> 0) / 4294967296;
+         };
+         
+         // Offset up to +/- 1.5 degrees so players form a cluster/city on the map
+         const offsetLat = (rng() - 0.5) * 3.0;
+         const offsetLng = (rng() - 0.5) * 3.0;
+         
+         groups[key] = { 
+            ...p, 
+            lat: centroid.lat + offsetLat, 
+            lng: centroid.lng + offsetLng, 
+            totalPixels: 0, 
+            isGroupedPlayer: true 
+         };
       }
       groups[key].totalPixels += (p.amount || 1);
     });
     return Object.values(groups);
-  }, [purchasedPixels]);
+  }, [purchasedPixels, countries]);
 
   // Compute HTML Overlays
   const htmlElements = useMemo(() => {
@@ -795,9 +819,24 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
         // Animated Pixels and UFO
         customLayerData={[
-          ...playerCountryGroups.filter(g => g.totalPixels < 100).map(g => ({...g, isPixel: true})), 
+          ...playerCountryGroups.map(g => ({...g, isPixel: true})), 
           ...(worldBoss && worldBoss.active ? [{...worldBoss, isUFO: true}] : [])
         ]}
+        customLayerLabel={(d) => {
+           if (d.isUFO) return 'World Boss';
+           // Read locally saved profile picture if available
+           const savedPic = localStorage.getItem(`hexglobe_profile_${d.name}`);
+           const imgHtml = savedPic ? `<img src="${savedPic}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #00f3ff; margin: 0 auto 6px; box-shadow: 0 0 10px rgba(0,243,255,0.5);" />` : `<div style="width: 44px; height: 44px; border-radius: 50%; background: #00f3ff; color: #000; font-weight: bold; font-size: 20px; line-height: 44px; margin: 0 auto 6px; box-shadow: 0 0 10px rgba(0,243,255,0.5);">${d.name.charAt(0).toUpperCase()}</div>`;
+           
+           return `
+             <div style="background: rgba(5, 5, 10, 0.95); border: 1px solid #bc13fe; padding: 12px; border-radius: 12px; text-align: center; font-family: sans-serif; pointer-events: none; min-width: 140px; backdrop-filter: blur(4px); box-shadow: 0 10px 25px rgba(0,0,0,0.8);">
+               ${imgHtml}
+               <div style="font-weight: 900; color: #fff; margin-bottom: 2px; font-size: 14px;">${d.name}</div>
+               <div style="font-size: 11px; color: #bc13fe; font-weight: 900; margin-bottom: 6px; letter-spacing: 1px;">${d.totalPixels} PIXELI</div>
+               <div style="font-size: 10px; color: #00f3ff; font-weight: 700; opacity: 0.8;">🌐 ${d.name.replace(/\s+/g, '').toLowerCase()}.md</div>
+             </div>
+           `;
+        }}
         customThreeObject={createCustomObject}
         customThreeObjectUpdate={(obj, d) => {
           if (!obj.__innerGroup) return;
