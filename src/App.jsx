@@ -18,6 +18,15 @@ import AllianceDetailsModal from './components/AllianceDetailsModal';
 import UserProfileModal from './components/UserProfileModal';
 import { supabase } from './supabaseClient';
 function App() {
+  const [playerName] = useState(() => {
+    let saved = localStorage.getItem('hexglobe_username');
+    if (!saved) {
+      saved = 'Soldier ' + Math.floor(1000 + Math.random() * 9000);
+      localStorage.setItem('hexglobe_username', saved);
+    }
+    return saved;
+  });
+
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedPixel, setSelectedPixel] = useState(null);
   const [selectedLogoName, setSelectedLogoName] = useState(null);
@@ -689,7 +698,7 @@ function App() {
             countryName={selectedCountry ? selectedCountry.ADMIN : 'Lume'}
             equippedCosmetics={equippedCosmetics}
             activeBoosts={activeBoosts}
-            userName={name || 'Eu'}
+            userName={playerName}
             userPixelsCount={userBalance}
             onOpenPrivateChat={handleOpenPrivateChat}
             purchasedPixels={purchasedPixels}
@@ -843,6 +852,7 @@ function App() {
         <PrivateChat 
           key={username}
           chatUser={username}
+          userName={playerName}
           onClose={() => handleClosePrivateChat(username)}
           positionIndex={index}
         />
