@@ -795,23 +795,12 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               </div>
             `;
-            el.onpointerdown = (e) => {
-               e.stopPropagation();
-            };
             el.onclick = (e) => {
                e.stopPropagation();
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
                }));
             };
-            el.ontouchend = (e) => {
-               e.stopPropagation();
-               window.dispatchEvent(new CustomEvent('mapAllianceClick', {
-                  detail: d.allianceData
-               }));
-            };
-
-
           } else if (d.type === 'ufo-hp') {
               el.innerHTML = `
                 <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: none; background: linear-gradient(135deg, rgba(20,0,0,0.95), rgba(50,0,0,0.85)); border: 1px solid rgba(255,0,68,0.5); border-top: 3px solid #ff0044; box-shadow: 0 10px 30px -5px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2); padding: 12px 20px; border-radius: 6px; color: white; font-family: 'Inter', sans-serif; white-space: nowrap; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
@@ -907,14 +896,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
               `;
             }
 
-            el.onpointerdown = (e) => {
-               e.stopPropagation(); // Prevents OrbitControls from eating the click
-            };
             el.onclick = (e) => {
-               e.stopPropagation();
-               if (onPixelClick) onPixelClick(d);
-            };
-            el.ontouchend = (e) => {
                e.stopPropagation();
                if (onPixelClick) onPixelClick(d);
             };
