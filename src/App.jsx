@@ -623,15 +623,17 @@ function App() {
       {hasStarted && <AlienFleet />}
 
       {hasStarted && (
-        <BottomChatBar 
-          countryName={selectedCountry ? selectedCountry.ADMIN : 'Lume'}
-          equippedCosmetics={equippedCosmetics}
-          activeBoosts={activeBoosts}
-          userName={name || 'Eu'}
-          userPixelsCount={userBalance}
-          onOpenPrivateChat={handleOpenPrivateChat}
-          purchasedPixels={purchasedPixels}
-        />
+        <div className={selectedCountry ? "hidden md:block" : "block"}>
+          <BottomChatBar 
+            countryName={selectedCountry ? selectedCountry.ADMIN : 'Lume'}
+            equippedCosmetics={equippedCosmetics}
+            activeBoosts={activeBoosts}
+            userName={name || 'Eu'}
+            userPixelsCount={userBalance}
+            onOpenPrivateChat={handleOpenPrivateChat}
+            purchasedPixels={purchasedPixels}
+          />
+        </div>
       )}
 
       {hasStarted && <FlashEvent />}

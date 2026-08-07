@@ -358,7 +358,7 @@ export default function UIOverlay({
 
         {/* Selected Country/Pixel Panel Right */}
         {selectedCountry && conqueredCountries[selectedCountry.ADMIN] ? (
-          <div className="flex fixed bottom-[220px] md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 max-h-[calc(100vh-250px)] md:max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50">
+          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 max-h-[85vh] md:max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50">
             <div className="absolute inset-0 bg-red-900/20 z-0 pointer-events-none"></div>
             
             <div className="p-6 pb-4 border-b border-red-500/30 shrink-0 relative z-10 bg-black/60">
@@ -398,7 +398,7 @@ export default function UIOverlay({
             </div>
           </div>
         ) : selectedCountry ? (
-          <div className="flex fixed bottom-[220px] md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 max-h-[calc(100vh-250px)] md:max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-neonCyan border transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50">
+          <div className="flex fixed bottom-0 md:bottom-6 right-0 md:right-6 bg-black/95 md:bg-black/40 backdrop-blur-xl md:glass-panel w-full md:w-96 max-h-[85vh] md:max-h-[calc(100vh-120px)] flex-col rounded-2xl pointer-events-auto border-neonCyan border transition-all duration-300 animate-in slide-in-from-bottom-10 md:slide-in-from-right-10 overflow-hidden z-50">
             <div className="p-6 pb-4 border-b border-white/10 shrink-0">
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -445,24 +445,27 @@ export default function UIOverlay({
                   <button 
                     onClick={() => setRightPanelTab('patriots')}
                     onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('patriots'); }}
-                    className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'patriots' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'patriots' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}
                   >
-                    👤 Patrioți
+                    <span className="hidden md:inline">👤 Patrioți</span>
+                    <span className="md:hidden text-sm">👤</span>
                   </button>
                   <button 
                     onClick={() => setRightPanelTab('wars')}
                     onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('wars'); }}
-                    className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'wars' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'wars' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-gray-300'}`}
                   >
-                    ⚔️ Război
+                    <span className="hidden md:inline">⚔️ Război</span>
+                    <span className="md:hidden text-sm">⚔️</span>
                   </button>
 
                   <button 
                     onClick={() => setRightPanelTab('alliances')}
                     onTouchEnd={(e) => { e.preventDefault(); setRightPanelTab('alliances'); }}
-                    className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'alliances' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md transition-all ${rightPanelTab === 'alliances' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-gray-500 hover:text-gray-300'}`}
                   >
-                    🛡️ Alianțe
+                    <span className="hidden md:inline">🛡️ Alianțe</span>
+                    <span className="md:hidden text-sm">🛡️</span>
                   </button>
                 </div>
               )}
