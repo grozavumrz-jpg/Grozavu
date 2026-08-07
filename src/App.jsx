@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import GlobeComponent from './components/GlobeComponent';
 import UIOverlay from './components/UIOverlay';
 import LeaderboardModal from './components/LeaderboardModal';
@@ -806,6 +807,7 @@ function App() {
           onInvestInUser={handleInvestInUser}
         />
       )}
+      <SpeedInsights />
     </div>
   );
 }

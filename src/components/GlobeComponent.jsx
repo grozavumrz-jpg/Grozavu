@@ -81,11 +81,13 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       'Norway': 'no',
       'Somaliland': 'so',
       'Kosovo': 'xk'
+    };
 
     if (overrides[name]) return overrides[name];
     const feature = countries.features?.find(f => f.properties.ADMIN === name);
     const iso = feature ? feature.properties.ISO_A2?.toLowerCase() : null;
     return (iso && iso !== '-99') ? iso : null;
+  };
 
 
   // Calculate html tooltips and live counters
@@ -119,7 +121,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         if (p[1] > maxLat) maxLat = p[1];
       });
       return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-
+    };
 
     purchasedPixels.forEach(p => {
       if (!countryStats[p.country]) {
@@ -203,7 +205,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             elements.push({
               type: 'alliance-crest',
               name: a.name || 'Alianță',
-              crest: a.crest || '🛡️',
+              crest: a.crest || '🛡���',
               color: a.color || '#00f3ff',
               lat: centroid.lat + offsetLat,
               lng: centroid.lng + offsetLng,
@@ -225,6 +227,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
          if (onUfoClick) onUfoClick();
       }
+    };
 
     window.addEventListener('pointerdown', handleGlobalClick, { capture: true });
     window.addEventListener('click', handleGlobalClick, { capture: true });
@@ -233,7 +236,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
       window.removeEventListener('pointerdown', handleGlobalClick, { capture: true });
       window.removeEventListener('click', handleGlobalClick, { capture: true });
       window.removeEventListener('dblclick', handleGlobalClick, { capture: true });
-
+    };
   }, [worldBoss, onUfoClick]);
 
   // High Performance Visual Reactivity (Pulsing Territories)
@@ -257,6 +260,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         }
       });
       frameId = requestAnimationFrame(animate);
+    };
 
     animate();
     return () => cancelAnimationFrame(frameId);
@@ -286,26 +290,27 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
           const targetPixels = purchasedPixels.filter(p => p.country === attack.target);
           
           const getCentroid = (name) => {
-         const feature = countries.features?.find(f => f.properties.ADMIN === name);
-         if (!feature) return null;
-         const geom = feature.geometry;
-         let pts = [];
-         if (geom.type === 'Polygon') pts = geom.coordinates[0];
-         else if (geom.type === 'MultiPolygon') {
-           let largest = geom.coordinates[0][0];
-           geom.coordinates.forEach(poly => { if (poly[0].length > largest.length) largest = poly[0]; });
-           pts = largest;
-         }
-         if (pts.length === 0) return null;
-         let sumLng = 0, sumLat = 0;
-         pts.forEach(p => { sumLng += p[0]; sumLat += p[1]; });
-         return { lat: sumLat / pts.length, lng: sumLng / pts.length };
+            const feature = countries.features?.find(f => f.properties.ADMIN === name);
+            if (!feature) return null;
+            const geom = feature.geometry;
+            let pts = [];
+            if (geom.type === 'Polygon') pts = geom.coordinates[0];
+            else if (geom.type === 'MultiPolygon') {
+              let largest = geom.coordinates[0][0];
+              geom.coordinates.forEach(poly => { if (poly[0].length > largest.length) largest = poly[0]; });
+              pts = largest;
+            }
+            if (pts.length === 0) return null;
+            let sumLng = 0, sumLat = 0;
+            pts.forEach(p => { sumLng += p[0]; sumLat += p[1]; });
+            return { lat: sumLat / pts.length, lng: sumLng / pts.length };
+          };
 
-
-       if (targetPixels.length > 0) {
-         targetP = targetPixels[Math.floor(Math.random() * targetPixels.length)];
-       } else {
-         targetP = getCentroid(attack.target); // fallback to centroid
+          if (targetPixels.length > 0) {
+            targetP = targetPixels[Math.floor(Math.random() * targetPixels.length)];
+          } else {
+            targetP = getCentroid(attack.target); // fallback to centroid;
+          }
        }
 
        if (targetP) {
@@ -329,7 +334,6 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             });
          }
        }
-      }
     });
     setRings(newRings);
     setArcs(newArcs);
@@ -467,7 +471,7 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
 
       cleanupLights = () => {
         scene.remove(ambientLight, sunLight, sunMesh);
-
+      };
 
       // Real-Time Position Loop for UTC Day/Night
       const updatePositions = () => {
@@ -491,16 +495,17 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
         sunMesh.position.set(sunPos.x, sunPos.y, sunPos.z);
         
         animationFrameId = requestAnimationFrame(updatePositions);
+      };
 
+      setTimeout(() => {
+        updatePositions();
+      }, 100);
 
-      updatePositions();
-    }, 100);
-
-    return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      cleanupLights();
-
-  }, []);
+      return () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        cleanupLights();
+      };
+    }, []);
 
   // Watch for selectedCountry prop changes to fly the camera
   useEffect(() => {
@@ -768,8 +773,8 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
             el.onclick = (e) => {
                window.dispatchEvent(new CustomEvent('mapAllianceClick', {
                   detail: d.allianceData
-
-
+               }));
+            };
           } else if (d.type === 'ufo-hp') {
               el.innerHTML = `
                 <div class="ufo-hp-bar" style="cursor: pointer; pointer-events: none; background: linear-gradient(135deg, rgba(20,0,0,0.95), rgba(50,0,0,0.85)); border: 1px solid rgba(255,0,68,0.5); border-top: 3px solid #ff0044; box-shadow: 0 10px 30px -5px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2); padding: 12px 20px; border-radius: 6px; color: white; font-family: 'Inter', sans-serif; white-space: nowrap; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
@@ -857,12 +862,6 @@ export default function GlobeComponent({ selectedCountry, onCountryClick, onPixe
                  </div>
               `;
             }
-            
-
-
-
-
-
           }
           return el;
         }}
