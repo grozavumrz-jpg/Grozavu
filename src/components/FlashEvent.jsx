@@ -6,6 +6,7 @@ const FlashEvent = () => {
   const [currentEvent, setCurrentEvent] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -87,24 +88,39 @@ const FlashEvent = () => {
     // Elegant slim pill banner - top center, never overlaps anything
     <div
       className={`fixed top-4 left-1/2 z-40 pointer-events-auto animate-in slide-in-from-top-4 duration-300`}
-      style={{ transform: 'translateX(-50%)' }}
+      style={{ transform: 'translateX(-50%)', width: '90%', maxWidth: '400px' }}
     >
-      <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${currentEvent.border} bg-black/80 backdrop-blur-md shadow-lg`}>
-        <span className={currentEvent.color}>
-          {getIcon(currentEvent.type)}
-        </span>
-        <span className={`text-xs font-bold ${currentEvent.color} max-w-[180px] truncate`}>
-          {currentEvent.title}
-        </span>
-        <span className="text-white font-black text-xs font-mono tracking-wider">
-          {formatTime(timeLeft)}
-        </span>
-        <button
-          onClick={() => setDismissed(true)}
-          className="text-gray-500 hover:text-white transition-colors ml-1"
-        >
-          <X className="w-3 h-3" />
-        </button>
+      <div 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={`flex flex-col gap-2 px-4 py-2 rounded-2xl border ${currentEvent.border} bg-black/90 backdrop-blur-md shadow-lg cursor-pointer transition-all duration-300`}
+      >
+        <div className="flex items-center gap-2">
+          <span className={currentEvent.color}>
+            {getIcon(currentEvent.type)}
+          </span>
+          <span className={`text-xs sm:text-sm font-bold ${currentEvent.color} truncate flex-1`}>
+            {currentEvent.shortTitle}
+          </span>
+          <span className="text-white font-black text-xs font-mono tracking-wider ml-auto">
+            {formatTime(timeLeft)}
+          </span>
+          
+          <button 
+            onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
+            className="ml-2 text-white/50 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isExpanded && (
+          <div className="pt-2 mt-1 border-t border-white/10 animate-in slide-in-from-top-2">
+            <h4 className={`text-sm font-bold ${currentEvent.color} mb-1`}>{currentEvent.title}</h4>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              {currentEvent.description}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
